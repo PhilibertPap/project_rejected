@@ -1,10 +1,10 @@
 // My cards: user-written challenges, playable after the daily card
 async function renderCards() {
-  const suggested = Math.round(level());
+  const suggested = Math.round(Game.comfort(state.R.st, state.data));
   const form = h("form", { class: "stack" },
     h("label", {}, "Title", h("input", { name: "title", required: true, maxlength: 80 })),
     h("label", {}, "Challenge", h("textarea", { name: "body", rows: 3, maxlength: 500 })),
-    h("label", {}, `Difficulty (your level ≈ ${level().toFixed(1)})`,
+    h("label", {}, `Difficulty (suggested for you: ${suggested})`,
       h("select", { name: "difficulty" }, [1, 2, 3, 4, 5].map(n =>
         h("option", { value: n, selected: n === suggested }, String(n))))),
     h("button", { type: "submit" }, "Add card"));

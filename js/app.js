@@ -9,7 +9,6 @@ const PLAYER_TABS = ["today", "cards", "journal", "feed", "settings"];
 const ADMIN_TABS = ["admin", "settings"];
 
 const showScreen = id => SCREENS.forEach(s => (el(s).hidden = s !== id));
-const level = () => Game.level(state.attempts, state.data.level);
 
 async function loadData() {
   state.data = await fetch("data/challenges.json", { cache: "no-store" }).then(r => r.json());
@@ -18,12 +17,14 @@ async function loadData() {
     q(sb.from("attempts").select("*").eq("user_id", state.me.id).order("created_at")),
     q(sb.from("custom_cards").select("*").eq("user_id", state.me.id).order("created_at")),
   ]);
+  refreshRating();
 }
 
-function renderStats() {
+// Compact line on the other tabs (Today has the stat tiles)
+function renderStats(tab) {
+  el("stats").hidden = state.me.is_admin || tab === "today";
   if (state.me.is_admin) return;
-  el("stats").textContent =
-    `Streak ${Game.streak(state.attempts)} · ${Game.total(state.attempts)} pts · Level ${level().toFixed(1)}`;
+  el("stats").textContent = `Rating ${fmtNum(state.R.st.rating)} · Streak ${Game.streak(state.attempts)}`;
 }
 
 // Card content for an attempt (JSON pack or the user's own cards)
@@ -43,7 +44,8 @@ function route() {
   Object.keys(RENDER).forEach(t => (el(`view-${t}`).hidden = t !== tab));
   document.querySelectorAll("nav a, header a").forEach(a =>
     a.classList.toggle("active", a.getAttribute("href") === `#${tab}`));
-  renderStats();
+  renderStats(tab);
+  tip.hide();
   RENDER[tab]().catch(err => mount(el(`view-${tab}`), h("p", { class: "msg" }, errorText(err))));
 }
 
@@ -58,7 +60,6 @@ async function render() {
     await loadData();
     el("player-nav").hidden = state.me.is_admin;
     el("admin-nav").hidden = !state.me.is_admin;
-    el("stats").hidden = state.me.is_admin;
     el("settings-link").hidden = false;
     showScreen("app");
     route();

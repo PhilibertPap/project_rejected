@@ -53,10 +53,9 @@ function statsTable() {
   const a = state.attempts;
   const resolved = a.filter(x => x.result);
   const rows = [
-    ["Points", Game.total(a)],
+    ["Rating", fmtNum(state.R.st.rating)],
     ["Current streak", Game.streak(a)],
     ["Best streak", Game.bestStreak(a)],
-    ["Level", level().toFixed(1)],
     ["Days validated", Game.validatedDays(a).size],
     ["Rejections", resolved.filter(x => x.result === "rejected").length],
     ["Yes", resolved.filter(x => x.result === "accepted").length],

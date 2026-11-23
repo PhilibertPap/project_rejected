@@ -2,7 +2,7 @@
 async function renderAdmin() {
   const [users, attempts] = await Promise.all([
     q(sb.rpc("admin_users")),
-    q(sb.from("attempts").select("user_id, day, difficulty, result, created_at")),
+    q(sb.from("attempts").select("id, user_id, day, difficulty, result, created_at, resolved_at")),
   ]);
   const pending = users.filter(u => !u.approved);
   const players = users.filter(u => u.approved);
@@ -29,12 +29,13 @@ async function renderAdmin() {
 
   const rows = players.map(u => {
     const mine = attempts.filter(a => a.user_id === u.id);
+    const R = Game.replay(mine, state.data);
     const lastDay = mine.filter(a => a.result).map(a => a.day).sort().pop();
     return h("tr", {},
       h("td", {}, u.username),
-      h("td", {}, String(Game.total(mine))),
-      h("td", {}, String(Game.streak(mine))),
-      h("td", {}, Game.level(mine, state.data.level).toFixed(1)),
+      h("td", { class: "num" }, fmtNum(R.st.rating)),
+      h("td", { class: "num" }, String(Game.streak(mine))),
+      h("td", { class: "num", title: `theta ${Math.round(R.st.theta)}` }, `${Game.comfort(R.st, state.data).toFixed(1)} ±${Math.round(R.st.u)}`),
       h("td", {}, String(Game.validatedDays(mine).size)),
       h("td", {}, lastDay ? fmtDay(lastDay, { day: "numeric", month: "short" }) : "—"),
       h("td", {}, fmtDateTime(u.last_sign_in_at)));
@@ -46,7 +47,7 @@ async function renderAdmin() {
     h("h3", {}, `Players (${players.length})`),
     players.length
       ? h("div", { class: "table-wrap" }, h("table", {},
-          h("thead", {}, h("tr", {}, ["User", "Pts", "Streak", "Level", "Days", "Last played", "Last login"].map(t => h("th", {}, t)))),
+          h("thead", {}, h("tr", {}, ["User", "Rating", "Streak", "Skill (hidden)", "Days", "Last played", "Last login"].map(t => h("th", {}, t)))),
           h("tbody", {}, rows)))
       : h("p", { class: "muted" }, "No players yet."));
 }

@@ -9,7 +9,8 @@ function dailySummary(dayAttempts) {
   if (!card) return h("p", { class: "muted" }, "No card played.");
   return h("p", { class: "daily" },
     h("span", {}, card.title),
-    h("span", { class: `muted res-${card.result}` }, ` · ${RESULT_LABEL[card.result]} ${fmtPts(Game.points(card))}`),
+    h("span", { class: `muted res-${card.result}` }, ` · ${RESULT_LABEL[card.result]}`),
+    h("span", { class: "muted small" }, ` · ${"●".repeat(card.difficulty)}`),
     more ? h("span", { class: "muted", title: "More cards played that day" }, " …") : null);
 }
 
