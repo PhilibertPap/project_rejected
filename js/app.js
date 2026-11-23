@@ -92,3 +92,5 @@ el("auth-form").addEventListener("submit", async e => {
 document.querySelectorAll(".js-logout").forEach(btn => btn.addEventListener("click", logout));
 window.addEventListener("hashchange", () => { if (!el("app").hidden) route(); });
 render();
+
+el("brand").prepend(logoMark());

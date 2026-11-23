@@ -1,11 +1,12 @@
 // Stat tiles + analytics tabs (Week / Heatmap / Rating / Stats)
 // Colors: one-hue ordinal ramp (validated: monotone, visible steps, light end >= 2:1 on surface)
+// Dark surface #0e0e0f: brighter = better day (validated ordinal ramp)
 const VIZ = {
-  empty: "#f0efec", choked: "#86b6ef", accepted: "#3987e5", rejected: "#184f95",
-  line: "#2a78d6", grid: "#e6e5e1", surface: "#ffffff",
+  empty: "#1f1f22", choked: "#184f95", accepted: "#3987e5", rejected: "#86b6ef",
+  line: "#f2f2f0", grid: "#2a2a2e", surface: "#0e0e0f",
 };
 const STATE_LABEL = { choked: "Choked", accepted: "Yes", rejected: "Rejected" };
-const ANALYTICS_TABS = ["Week", "Heatmap", "Rating", "Stats"];
+const ANALYTICS_TABS = ["Week", "Deck", "Heatmap", "Rating", "Stats"];
 const fmtNum = n => n.toLocaleString("en-GB");
 
 function refreshRating() { state.R = Game.replay(state.attempts, state.data); }
@@ -97,7 +98,7 @@ function analyticsTabs() {
     bar.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.textContent === name));
     tip.hide();
     const states = dayStates();
-    mount(panel, { Week: () => weekView(states), Heatmap: () => heatmapView(states), Rating: ratingView, Stats: statsView }[name]());
+    mount(panel, { Week: () => weekView(states), Deck: deckView, Heatmap: () => heatmapView(states), Rating: ratingView, Stats: statsView }[name]());
   };
   ANALYTICS_TABS.forEach(n => bar.append(h("button", { class: "tab", role: "tab", onclick: () => select(n) }, n)));
   const wrap = h("section", { class: "analytics" }, bar, panel);
@@ -197,14 +198,14 @@ function ratingView() {
   const line = vals.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
   const area = `${line}L${x(n - 1).toFixed(1)},${y(0)}L${x(0).toFixed(1)},${y(0)}Z`;
 
-  const cross = svgEl("line", { y1: T, y2: H - B, stroke: "#9a9893", "stroke-width": 1, visibility: "hidden" });
+  const cross = svgEl("line", { y1: T, y2: H - B, stroke: "#8d8d93", "stroke-width": 1, visibility: "hidden" });
   const hoverDot = svgEl("circle", { r: 4, fill: VIZ.line, stroke: VIZ.surface, "stroke-width": 2, visibility: "hidden" });
   const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, class: "chart", role: "img", "aria-label": `Rating over the last ${n} days, now ${state.R.st.rating}` },
     [0, 0.5, 1].map(f => [
       svgEl("line", { x1: L, x2: W - R, y1: y(yMax * f), y2: y(yMax * f), stroke: VIZ.grid, "stroke-width": 1 }),
       svgEl("text", { x: L - 6, y: y(yMax * f) + 4, "text-anchor": "end", class: "axis" }, fmtNum(yMax * f)),
     ]),
-    svgEl("path", { d: area, fill: VIZ.line, "fill-opacity": 0.1 }),
+    svgEl("path", { d: area, fill: VIZ.line, "fill-opacity": 0.08 }),
     svgEl("path", { d: line, fill: "none", stroke: VIZ.line, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }),
     svgEl("circle", { cx: x(n - 1), cy: y(vals[n - 1]), r: 4, fill: VIZ.line, stroke: VIZ.surface, "stroke-width": 2 }),
     svgEl("text", { x: L, y: H - 6, class: "axis" }, fmtDay(start, { day: "numeric", month: "short" })),
@@ -252,4 +253,19 @@ function statsView() {
     ["Best streak", Game.bestStreak(state.attempts)],
   ];
   return h("ul", { class: "list compact" }, rows.map(([k, v]) => h("li", {}, h("span", {}, k), h("strong", { class: "num" }, String(v)))));
+}
+
+// ---- Deck: cards collected per suit (custom cards excluded: their difficulty is self-rated)
+function deckView() {
+  const done = state.attempts.filter(a => Game.isDone(a) && !(a.challenge_id || "").startsWith("custom-"));
+  return [
+    h("div", { class: "deck" }, [1, 2, 3, 4, 5].map(d => {
+      const n = done.filter(a => a.difficulty === d).length;
+      return h("div", { class: `deck-suit suit-${d}${n ? "" : " empty"}` },
+        h("span", { class: "suit-mark" }, SUITS[d].symbol),
+        h("b", { class: "num" }, String(n)),
+        h("small", {}, SUITS[d].name));
+    })),
+    h("p", { class: "muted small center" }, `${done.length} card${done.length === 1 ? "" : "s"} collected · your own cards don't count`),
+  ];
 }

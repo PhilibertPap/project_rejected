@@ -23,18 +23,21 @@ const CHOKE_LINES = [
 const pickLine = () => CHOKE_LINES[Math.floor(Math.random() * CHOKE_LINES.length)];
 
 function cardFront(card) {
-  return h("div", { class: "card-face card-front" },
-    dots(card.difficulty),
+  const d = card.difficulty, suit = SUITS[d];
+  const corner = pos => h("div", { class: `corner ${pos}` }, h("b", {}, String(d)), h("span", {}, suit.symbol));
+  return h("div", { class: `card-face card-front suit-${d}` },
+    corner("tl"),
     h("h2", {}, card.title),
     h("p", {}, card.text),
-    card.tip ? h("p", { class: "muted" }, card.tip) : null,
-    card.custom ? h("p", { class: "muted" }, "Your card") : null);
+    card.tip ? h("p", { class: "tip" }, card.tip) : null,
+    card.custom ? h("p", { class: "tip" }, "Your card") : null,
+    corner("br"));
 }
 
 function cardEl(front, faceUp) {
   return h("div", { class: `card${faceUp ? " is-up" : ""}` },
     h("div", { class: "card-inner" },
-      h("div", { class: "card-face card-back" }, h("span", { class: "card-mark" }, "?")),
+      h("div", { class: "card-face card-back" }, logoMark()),
       front || h("div", { class: "card-face card-front" })));
 }
 
@@ -133,20 +136,44 @@ function todayHistory(todays) {
   const done = todays.filter(a => a.result).sort(Game.byTime);
   if (!done.length) return null;
   return h("ul", { class: "list" }, done.map(a =>
-    h("li", {}, h("span", {}, a.title),
+    h("li", {}, h("span", {}, suitBadge(a.difficulty), "  ", a.title),
       h("span", { class: `muted res-${a.result}` }, `${RESULT_LABEL[a.result]} ${fmtPts(state.R.deltas[a.id] || 0)}`))));
+}
+
+function collectedFront(attempt) {
+  const d = attempt.difficulty, suit = SUITS[d];
+  const corner = pos => h("div", { class: `corner ${pos}` }, h("b", {}, String(d)), h("span", {}, suit.symbol));
+  return h("div", { class: `card-face card-front suit-${d}` },
+    corner("tl"),
+    h("h2", { class: "center" }, attempt.title),
+    h("p", { class: "tip center" }, RESULT_LABEL[attempt.result]),
+    corner("br"));
+}
+
+// Once the day is validated, show the collected card; extra cards stay one discreet click away
+let showExtra = false;
+function collected(todays) {
+  const { card } = Game.dailyCard(todays);
+  return [
+    h("div", { class: "card is-up collected" }, h("div", { class: "card-inner" }, collectedFront(card))),
+    h("p", { class: "muted center" }, "Today's card is collected. See you tomorrow."),
+    h("p", { class: "center" }, h("button", { class: "secondary small", onclick: () => { showExtra = true; renderToday(); } }, "Extra card (optional)")),
+  ];
 }
 
 async function renderToday() {
   const todays = state.attempts.filter(a => a.day === Game.today());
   const pending = todays.find(a => !a.result);
-  const label = Game.validatedToday(state.attempts) ? "Tap to draw another card (optional)"
-    : todays.length ? "Tap to draw another card" : "Tap to draw today's card";
+  const validated = Game.validatedToday(state.attempts);
+  const label = validated ? "Tap to draw an extra card" : todays.length ? "Tap to draw another card" : "Tap to draw today's card";
+  let main;
+  if (pending) main = faceUp(pending);
+  else if (validated && !showExtra) main = collected(todays);
+  else main = [faceDown(label), todays.length ? customPicker() : null];
   mount(el("view-today"),
     statTiles(),
     statusLine(todays),
-    pending ? faceUp(pending) : faceDown(label),
-    !pending && todays.length ? customPicker() : null,
+    main,
     todayHistory(todays),
     analyticsTabs());
 }
