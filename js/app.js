@@ -6,7 +6,7 @@ const RENDER = {
   feed: () => renderFeed(), settings: () => renderSettings(), admin: () => renderAdmin(),
 };
 const PLAYER_TABS = ["today", "cards", "journal", "feed", "settings"];
-const ADMIN_TABS = ["admin", "settings"];
+const ADMIN_TABS = ["admin", "feed", "settings"];
 
 const showScreen = id => SCREENS.forEach(s => (el(s).hidden = s !== id));
 
@@ -63,6 +63,8 @@ async function render() {
     el("settings-link").hidden = false;
     showScreen("app");
     route();
+    sb.rpc("touch").then(() => {}, () => {});
+    if (!state.me.is_admin && !state.me.onboarded) setTimeout(startTutorial, 400);
   } catch (err) {
     showScreen("auth");
     el("auth-msg").textContent = errorText(err);
@@ -94,3 +96,4 @@ window.addEventListener("hashchange", () => { if (!el("app").hidden) route(); })
 render();
 
 el("brand").prepend(logoMark());
+el("hero-mark").append(logoMark());

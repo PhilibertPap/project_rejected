@@ -8,7 +8,8 @@ Daily rejection therapy challenges. https://philibertpap.github.io/project_rejec
 - First 5 days: scripted cards. Then cards are picked by the hidden skill (see below).
 - After the daily card (optional): another random card, or one of your own cards (My cards).
 - Journal: unlimited private entries, max one public entry per day (feed, 👍/💪 reactions, replies).
-- Admin account: admin interface only.
+- Admin account: admin interface only (overview charts, approve/refuse, expandable player profiles; private journal entries are only counted, never shown).
+- First login: skippable tutorial (concept + spotlight tour), replayable from Settings.
 
 ## Rating (public) — `scoring` in challenges.json
 - Starts at 0, never below 0. Base = 100 + 15 × (difficulty − 1).
@@ -21,6 +22,9 @@ Daily rejection therapy challenges. https://philibertpap.github.io/project_rejec
 - u is high at the start (big moves), shrinks with play, grows when idle or after a surprise (choking an easy card late).
 - Done within 30 min of the draw = stronger evidence.
 - Card draw: difficulties weighted so that P(go) ≈ 78 % (stretch zone), with a bit of exploration.
+
+## Rollback
+- Tags mark stable versions: `git tag` to list, `git checkout <tag> -- .` then commit to go back.
 
 ## Stack
 - Static site (HTML/CSS/JS, no build), GitHub Pages

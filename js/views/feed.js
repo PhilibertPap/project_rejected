@@ -35,8 +35,21 @@ function reactionPills(e) {
   });
 }
 
+// Delete button: admin on everything, users on their own replies
+function deleteBtn(label, what, fn) {
+  return h("button", {
+    class: "icon-btn del", "aria-label": label, title: label,
+    onclick: async ev => {
+      ev.stopPropagation();
+      if (!confirm(`Delete this ${what}? This can't be undone.`)) return;
+      try { await fn(); renderFeed(); } catch (err) { alert(errorText(err)); }
+    },
+  }, "×");
+}
+
 function post(e, dayAttempts) {
   const mine = e.user_id === state.me.id;
+  const admin = state.me.is_admin;
   const replies = [...e.replies].sort((a, b) => a.created_at.localeCompare(b.created_at));
   const open = openThreads.has(e.id);
   const input = h("input", { placeholder: "Write a reply…", maxlength: 500 });
@@ -44,6 +57,8 @@ function post(e, dayAttempts) {
   const thread = h("div", { class: "thread", hidden: !open },
     replies.map(r => h("div", { class: "reply" },
       avatar(r.author.username, r.author.username === state.me.username),
+      admin || r.author.username === state.me.username
+        ? deleteBtn("Delete reply", "reply", () => q(sb.from("replies").delete().eq("id", r.id))) : null,
       h("div", {},
         h("div", { class: "reply-head" }, h("strong", {}, r.author.username), h("span", { class: "muted small" }, fmtAgo(r.created_at))),
         h("p", {}, r.body)))),
@@ -73,7 +88,8 @@ function post(e, dayAttempts) {
       avatar(e.author.username, mine),
       h("div", {},
         h("strong", {}, e.author.username),
-        h("span", { class: "muted small" }, ` · ${fmtDay(e.day, { day: "numeric", month: "short" })} · ${fmtAgo(e.created_at)}`))),
+        h("span", { class: "muted small" }, ` · ${fmtDay(e.day, { day: "numeric", month: "short" })} · ${fmtAgo(e.created_at)}`)),
+      admin ? deleteBtn("Delete post", "post (and its replies)", () => q(sb.from("recaps").delete().eq("id", e.id))) : null),
     dailySummary(dayAttempts),
     h("p", { class: "post-body pre" }, e.body),
     h("div", { class: "post-actions" }, reactionPills(e), toggle),
