@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,41 +8,64 @@
 </head>
 <body>
   <main class="container">
-    <h1>project_rejected</h1>
+    <header>
+      <h1>project_rejected</h1>
+    </header>
 
     <section id="auth" hidden>
       <form id="auth-form">
-        <label>Pseudo
+        <label>Username
           <input name="username" required pattern="[A-Za-z0-9_]{3,20}"
-                 title="3 à 20 caractères : lettres, chiffres, _" autocomplete="username">
+                 title="3 to 20 characters: letters, digits, _" autocomplete="username">
         </label>
-        <label>Mot de passe
+        <label>Password
           <input name="password" type="password" required minlength="6" autocomplete="current-password">
         </label>
         <div class="row">
-          <button type="submit" data-action="login">Se connecter</button>
-          <button type="submit" data-action="signup" class="secondary">Créer un compte</button>
+          <button type="submit" data-action="login">Log in</button>
+          <button type="submit" data-action="signup" class="secondary">Sign up</button>
         </div>
         <p id="auth-msg" class="msg"></p>
       </form>
     </section>
 
     <section id="pending" hidden>
-      <p>Compte <strong class="js-username"></strong> créé.</p>
-      <p class="muted">En attente de validation par l'admin.</p>
-      <button class="js-logout secondary">Se déconnecter</button>
+      <p>Account <strong class="js-username"></strong> created.</p>
+      <p class="muted">Waiting for admin approval.</p>
+      <button class="js-logout secondary">Log out</button>
     </section>
 
-    <section id="home" hidden>
-      <p>Salut <strong class="js-username"></strong>.</p>
-      <p id="admin-link" hidden><a href="admin.html">Valider des comptes</a></p>
-      <button class="js-logout secondary">Se déconnecter</button>
+    <section id="app" hidden>
+      <nav>
+        <a href="#today">Today</a>
+        <a href="#cards">My cards</a>
+        <a href="#journal">Journal</a>
+        <a href="#feed">Feed</a>
+      </nav>
+      <p id="stats" class="stats"></p>
+
+      <div id="view-today"></div>
+      <div id="view-cards" hidden></div>
+      <div id="view-journal" hidden></div>
+      <div id="view-feed" hidden></div>
+
+      <footer class="row">
+        <span class="muted js-username"></span>
+        <a id="admin-link" href="admin.html" hidden>Admin</a>
+        <button class="js-logout secondary small">Log out</button>
+      </footer>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
+  <script src="js/dom.js"></script>
   <script src="js/supabase.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/views/today.js"></script>
+  <script src="js/views/cards.js"></script>
+  <script src="js/views/journal.js"></script>
+  <script src="js/views/feed.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

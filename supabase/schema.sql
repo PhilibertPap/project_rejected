@@ -66,7 +66,9 @@ with check (id = auth.uid());
 
 -- Un utilisateur ne peut modifier que is_public (pas approved / is_admin)
 revoke insert, update, delete on public.profiles from anon, authenticated;
+grant select on public.profiles to authenticated;
 grant update (is_public) on public.profiles to authenticated;
+grant execute on function public.is_approved(), public.is_admin() to authenticated;
 
 -- ========== DÉFIS TENTÉS ==========
 create table public.attempts (

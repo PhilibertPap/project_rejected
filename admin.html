@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,19 +10,17 @@
   <main class="container">
     <h1>Admin</h1>
     <p id="admin-msg" class="msg"></p>
-
     <div id="admin" hidden>
-      <h2 class="muted">En attente</h2>
+      <h3>Pending</h3>
       <ul id="pending-list" class="list"></ul>
-      <h2 class="muted">Validés</h2>
+      <h3>Approved</h3>
       <ul id="approved-list" class="list"></ul>
     </div>
-
-    <p><a href="./">← Retour</a></p>
+    <p><a href="./">← Back</a></p>
   </main>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
+  <script src="js/dom.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/admin.js"></script>
 </body>
