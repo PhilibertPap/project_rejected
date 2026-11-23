@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · project_rejected</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Admin</h1>
+    <p id="admin-msg" class="msg"></p>
+
+    <div id="admin" hidden>
+      <h2 class="muted">En attente</h2>
+      <ul id="pending-list" class="list"></ul>
+      <h2 class="muted">Validés</h2>
+      <ul id="approved-list" class="list"></ul>
+    </div>
+
+    <p><a href="./">← Retour</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

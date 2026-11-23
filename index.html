@@ -3,9 +3,46 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>project_rejection</title>
+  <title>project_rejected</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <p>hello world</p>
+  <main class="container">
+    <h1>project_rejected</h1>
+
+    <section id="auth" hidden>
+      <form id="auth-form">
+        <label>Pseudo
+          <input name="username" required pattern="[A-Za-z0-9_]{3,20}"
+                 title="3 à 20 caractères : lettres, chiffres, _" autocomplete="username">
+        </label>
+        <label>Mot de passe
+          <input name="password" type="password" required minlength="6" autocomplete="current-password">
+        </label>
+        <div class="row">
+          <button type="submit" data-action="login">Se connecter</button>
+          <button type="submit" data-action="signup" class="secondary">Créer un compte</button>
+        </div>
+        <p id="auth-msg" class="msg"></p>
+      </form>
+    </section>
+
+    <section id="pending" hidden>
+      <p>Compte <strong class="js-username"></strong> créé.</p>
+      <p class="muted">En attente de validation par l'admin.</p>
+      <button class="js-logout secondary">Se déconnecter</button>
+    </section>
+
+    <section id="home" hidden>
+      <p>Salut <strong class="js-username"></strong>.</p>
+      <p id="admin-link" hidden><a href="admin.html">Valider des comptes</a></p>
+      <button class="js-logout secondary">Se déconnecter</button>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
