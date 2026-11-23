@@ -1,66 +1,268 @@
 {
-  "_doc": "difficulty 1-5 = n. Points: rejected +2n, accepted +n, choked -n. Scripted cards are the first card of the day until all are done.",
-
-  "level": { "start": 1, "rate": 0.3, "done_bonus": 0.5, "choked_malus": 1 },
-  "draw":  { "offsets": { "-1": 0.15, "0": 0.5, "1": 0.3, "2": 0.05 }, "avoid_recent": 15 },
-
+  "_doc": "difficulty 1-5 = n. Points: rejected +2n, accepted +n, choked -n. Streak = consecutive days with at least one Rejected/Yes. Scripted cards come first each day until all are done. Choked cards go back in the deck (backlog_chance).",
+  "level": {
+    "start": 1,
+    "rate": 0.3,
+    "done_bonus": 0.5,
+    "choked_malus": 1
+  },
+  "draw": {
+    "offsets": {
+      "-1": 0.15,
+      "0": 0.5,
+      "1": 0.3,
+      "2": 0.05
+    },
+    "avoid_recent": 15,
+    "backlog_chance": 0.35
+  },
   "scripted": [
-    { "id": "d1", "difficulty": 1, "title": "What time is it?",
+    {
+      "id": "d1",
+      "difficulty": 1,
+      "title": "What time is it?",
       "text": "Ask a stranger on the street for the time. Even if your phone is in your pocket.",
-      "tip": "Walk up, open your mouth, survive. That's it." },
-    { "id": "d2", "difficulty": 1, "title": "Directions",
+      "tip": "Walk up, open your mouth, survive. That's it."
+    },
+    {
+      "id": "d2",
+      "difficulty": 1,
+      "title": "Directions",
       "text": "Ask someone for directions to a nearby place (station, museum, café) and thank them.",
-      "tip": "Actually listen to the answer instead of planning your exit." },
-    { "id": "d3", "difficulty": 1, "title": "Specific compliment",
+      "tip": "Actually listen to the answer instead of planning your exit."
+    },
+    {
+      "id": "d3",
+      "difficulty": 1,
+      "title": "Specific compliment",
       "text": "Give a sincere, specific compliment to a waiter, cashier or shop assistant.",
-      "tip": "Specific beats generic: 'great wine pick' beats 'thanks, nice'." },
-    { "id": "d4", "difficulty": 2, "title": "The discount",
+      "tip": "Specific beats generic: 'great wine pick' beats 'thanks, nice'."
+    },
+    {
+      "id": "d4",
+      "difficulty": 2,
+      "title": "The discount",
       "text": "When paying for a coffee or a pastry, ask if they could give you a small discount.",
-      "tip": "You'll probably hear no. That's the point: smile and pay." },
-    { "id": "d5", "difficulty": 2, "title": "The photo",
+      "tip": "You'll probably hear no. That's the point: smile and pay."
+    },
+    {
+      "id": "d5",
+      "difficulty": 2,
+      "title": "The photo",
       "text": "Ask a stranger to take a photo of you, then ask for a second one if you don't like it.",
-      "tip": "Asking again is the real challenge." }
+      "tip": "Asking again is the real challenge."
+    }
   ],
-
   "pool": [
-    { "id": "c1-01", "difficulty": 1, "title": "Book advice", "text": "In a bookshop, ask the bookseller to recommend a book based on your tastes." },
-    { "id": "c1-02", "difficulty": 1, "title": "Taste first", "text": "At an ice cream shop, cheese shop or wine shop, ask to taste before choosing." },
-    { "id": "c1-03", "difficulty": 1, "title": "Their favourite", "text": "Ask the waiter what they would order in your place, and order it." },
-    { "id": "c1-04", "difficulty": 1, "title": "Five hellos", "text": "Say hello with a smile to five people you cross today." },
-    { "id": "c1-05", "difficulty": 1, "title": "Glass of water", "text": "Walk into a café and ask for a glass of water without ordering anything." },
-    { "id": "c1-06", "difficulty": 1, "title": "The question", "text": "Ask a question out loud during a lecture, meeting or talk." },
-    { "id": "c1-07", "difficulty": 1, "title": "Where's it from?", "text": "Ask someone where they bought an item or piece of clothing you like." },
-    { "id": "c1-08", "difficulty": 1, "title": "Local tip", "text": "Ask a shopkeeper for their favourite spot in the neighbourhood." },
-
-    { "id": "c2-01", "difficulty": 2, "title": "Wrong shop", "text": "Ask a shop for something it obviously doesn't sell (bread at the florist)." },
-    { "id": "c2-02", "difficulty": 2, "title": "Tip + 30 seconds", "text": "Ask a stranger for a restaurant tip, then keep the conversation going for 30 seconds." },
-    { "id": "c2-03", "difficulty": 2, "title": "Free sample", "text": "Ask for a free sample in a shop that doesn't offer any." },
-    { "id": "c2-04", "difficulty": 2, "title": "Swap seats", "text": "Ask someone to swap seats with you (train, cinema, library)." },
-    { "id": "c2-05", "difficulty": 2, "title": "The request", "text": "Ask a street musician to play a specific song." },
-    { "id": "c2-06", "difficulty": 2, "title": "What are you reading?", "text": "Ask someone reading in public what they're reading and whether they recommend it." },
-    { "id": "c2-07", "difficulty": 2, "title": "Behind the scenes", "text": "Ask a restaurant or bakery if you can have a quick look at the kitchen." },
-    { "id": "c2-08", "difficulty": 2, "title": "The call", "text": "Call a business and ask for a service they don't usually offer." },
-
-    { "id": "c3-01", "difficulty": 3, "title": "The queue", "text": "Start a conversation with someone in a queue and keep it going for at least a minute." },
-    { "id": "c3-02", "difficulty": 3, "title": "Real advice", "text": "Ask a stranger's opinion on a real decision you have to make." },
-    { "id": "c3-03", "difficulty": 3, "title": "Haggle", "text": "At a market or flea market, offer a specific price below the asking price." },
-    { "id": "c3-04", "difficulty": 3, "title": "Join the group", "text": "At a party or event, join a group that is already talking." },
-    { "id": "c3-05", "difficulty": 3, "title": "Coffee?", "text": "Invite an acquaintance you rarely see for a coffee this week." },
-    { "id": "c3-06", "difficulty": 3, "title": "Teach me", "text": "Ask someone to teach you something they can do in two minutes (juggling, a word in their language…)." },
-    { "id": "c3-07", "difficulty": 3, "title": "Upgrade", "text": "Ask for an unplanned favour: a better table, a quieter room, a seat further up front." },
-    { "id": "c3-08", "difficulty": 3, "title": "Study buddy", "text": "Ask a classmate you barely know to study or work together." },
-
-    { "id": "c4-01", "difficulty": 4, "title": "No excuse", "text": "Approach a stranger without any particular reason and talk for at least two minutes." },
-    { "id": "c4-02", "difficulty": 4, "title": "Fifteen minutes", "text": "Ask a professor, researcher or professional whose work interests you for a 15-minute chat." },
-    { "id": "c4-03", "difficulty": 4, "title": "Speak up", "text": "Speak in front of a group (dinner, class, club) to thank someone or announce something." },
-    { "id": "c4-04", "difficulty": 4, "title": "Stay in touch?", "text": "After a good conversation with someone new, ask for their number or Instagram." },
-    { "id": "c4-05", "difficulty": 4, "title": "Out of reach", "text": "Write to someone you admire (author, athlete, researcher) with a real question." },
-    { "id": "c4-06", "difficulty": 4, "title": "Walk-in application", "text": "Walk into a company, lab or shop you like and ask if they take interns." },
-
-    { "id": "c5-01", "difficulty": 5, "title": "Coffee, for real", "text": "Ask someone you're attracted to out for a coffee or a drink." },
-    { "id": "c5-02", "difficulty": 5, "title": "Just saying hi", "text": "Go up to someone you're attracted to, say you wanted to introduce yourself, and see where it goes." },
-    { "id": "c5-03", "difficulty": 5, "title": "The pitch", "text": "Pitch one of your projects to a stranger and ask for their honest opinion." },
-    { "id": "c5-04", "difficulty": 5, "title": "The big ask", "text": "Ask for something important you've been putting off (a role, a raise, an opportunity)." },
-    { "id": "c5-05", "difficulty": 5, "title": "Game on", "text": "Invite a group of strangers to play a game with you (cards, frisbee, quiz)." }
+    {
+      "id": "c1-01",
+      "difficulty": 1,
+      "title": "Book advice",
+      "text": "In a bookshop, ask the bookseller to recommend a book based on your tastes."
+    },
+    {
+      "id": "c1-02",
+      "difficulty": 1,
+      "title": "Taste first",
+      "text": "At an ice cream shop, cheese shop or wine shop, ask to taste before choosing."
+    },
+    {
+      "id": "c1-03",
+      "difficulty": 1,
+      "title": "Their favourite",
+      "text": "Ask the waiter what they would order in your place, and order it."
+    },
+    {
+      "id": "c1-04",
+      "difficulty": 1,
+      "title": "Five hellos",
+      "text": "Say hello with a smile to five people you cross today."
+    },
+    {
+      "id": "c1-05",
+      "difficulty": 1,
+      "title": "Glass of water",
+      "text": "Walk into a café and ask for a glass of water without ordering anything."
+    },
+    {
+      "id": "c1-06",
+      "difficulty": 1,
+      "title": "The question",
+      "text": "Ask a question out loud during a lecture, meeting or talk."
+    },
+    {
+      "id": "c1-07",
+      "difficulty": 1,
+      "title": "Where's it from?",
+      "text": "Ask someone where they bought an item or piece of clothing you like."
+    },
+    {
+      "id": "c1-08",
+      "difficulty": 1,
+      "title": "Local tip",
+      "text": "Ask a shopkeeper for their favourite spot in the neighbourhood."
+    },
+    {
+      "id": "c2-01",
+      "difficulty": 2,
+      "title": "Wrong shop",
+      "text": "Ask a shop for something it obviously doesn't sell (bread at the florist)."
+    },
+    {
+      "id": "c2-02",
+      "difficulty": 2,
+      "title": "Tip + 30 seconds",
+      "text": "Ask a stranger for a restaurant tip, then keep the conversation going for 30 seconds."
+    },
+    {
+      "id": "c2-03",
+      "difficulty": 2,
+      "title": "Free sample",
+      "text": "Ask for a free sample in a shop that doesn't offer any."
+    },
+    {
+      "id": "c2-04",
+      "difficulty": 2,
+      "title": "Swap seats",
+      "text": "Ask someone to swap seats with you (train, cinema, library)."
+    },
+    {
+      "id": "c2-05",
+      "difficulty": 2,
+      "title": "The request",
+      "text": "Ask a street musician to play a specific song."
+    },
+    {
+      "id": "c2-06",
+      "difficulty": 2,
+      "title": "What are you reading?",
+      "text": "Ask someone reading in public what they're reading and whether they recommend it."
+    },
+    {
+      "id": "c2-07",
+      "difficulty": 2,
+      "title": "Behind the scenes",
+      "text": "Ask a restaurant or bakery if you can have a quick look at the kitchen."
+    },
+    {
+      "id": "c2-08",
+      "difficulty": 2,
+      "title": "The call",
+      "text": "Call a business and ask for a service they don't usually offer."
+    },
+    {
+      "id": "c3-01",
+      "difficulty": 3,
+      "title": "The queue",
+      "text": "Start a conversation with someone in a queue and keep it going for at least a minute."
+    },
+    {
+      "id": "c3-02",
+      "difficulty": 3,
+      "title": "Real advice",
+      "text": "Ask a stranger's opinion on a real decision you have to make."
+    },
+    {
+      "id": "c3-03",
+      "difficulty": 3,
+      "title": "Haggle",
+      "text": "At a market or flea market, offer a specific price below the asking price."
+    },
+    {
+      "id": "c3-04",
+      "difficulty": 3,
+      "title": "Join the group",
+      "text": "At a party or event, join a group that is already talking."
+    },
+    {
+      "id": "c3-05",
+      "difficulty": 3,
+      "title": "Coffee?",
+      "text": "Invite an acquaintance you rarely see for a coffee this week."
+    },
+    {
+      "id": "c3-06",
+      "difficulty": 3,
+      "title": "Teach me",
+      "text": "Ask someone to teach you something they can do in two minutes (juggling, a word in their language…)."
+    },
+    {
+      "id": "c3-07",
+      "difficulty": 3,
+      "title": "Upgrade",
+      "text": "Ask for an unplanned favour: a better table, a quieter room, a seat further up front."
+    },
+    {
+      "id": "c3-08",
+      "difficulty": 3,
+      "title": "Study buddy",
+      "text": "Ask a classmate you barely know to study or work together."
+    },
+    {
+      "id": "c4-01",
+      "difficulty": 4,
+      "title": "No excuse",
+      "text": "Approach a stranger without any particular reason and talk for at least two minutes."
+    },
+    {
+      "id": "c4-02",
+      "difficulty": 4,
+      "title": "Fifteen minutes",
+      "text": "Ask a professor, researcher or professional whose work interests you for a 15-minute chat."
+    },
+    {
+      "id": "c4-03",
+      "difficulty": 4,
+      "title": "Speak up",
+      "text": "Speak in front of a group (dinner, class, club) to thank someone or announce something."
+    },
+    {
+      "id": "c4-04",
+      "difficulty": 4,
+      "title": "Stay in touch?",
+      "text": "After a good conversation with someone new, ask for their number or Instagram."
+    },
+    {
+      "id": "c4-05",
+      "difficulty": 4,
+      "title": "Out of reach",
+      "text": "Write to someone you admire (author, athlete, researcher) with a real question."
+    },
+    {
+      "id": "c4-06",
+      "difficulty": 4,
+      "title": "Walk-in application",
+      "text": "Walk into a company, lab or shop you like and ask if they take interns."
+    },
+    {
+      "id": "c5-01",
+      "difficulty": 5,
+      "title": "Coffee, for real",
+      "text": "Ask someone you're attracted to out for a coffee or a drink."
+    },
+    {
+      "id": "c5-02",
+      "difficulty": 5,
+      "title": "Just saying hi",
+      "text": "Go up to someone you're attracted to, say you wanted to introduce yourself, and see where it goes."
+    },
+    {
+      "id": "c5-03",
+      "difficulty": 5,
+      "title": "The pitch",
+      "text": "Pitch one of your projects to a stranger and ask for their honest opinion."
+    },
+    {
+      "id": "c5-04",
+      "difficulty": 5,
+      "title": "The big ask",
+      "text": "Ask for something important you've been putting off (a role, a raise, an opportunity)."
+    },
+    {
+      "id": "c5-05",
+      "difficulty": 5,
+      "title": "Game on",
+      "text": "Invite a group of strangers to play a game with you (cards, frisbee, quiz)."
+    }
   ]
 }

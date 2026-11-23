@@ -8,8 +8,9 @@
 </head>
 <body>
   <main class="container">
-    <header>
+    <header class="row between">
       <h1>project_rejected</h1>
+      <a id="settings-link" href="#settings" hidden>Settings</a>
     </header>
 
     <section id="auth" hidden>
@@ -36,11 +37,14 @@
     </section>
 
     <section id="app" hidden>
-      <nav>
+      <nav id="player-nav">
         <a href="#today">Today</a>
         <a href="#cards">My cards</a>
         <a href="#journal">Journal</a>
         <a href="#feed">Feed</a>
+      </nav>
+      <nav id="admin-nav">
+        <a href="#admin">Users</a>
       </nav>
       <p id="stats" class="stats"></p>
 
@@ -48,12 +52,8 @@
       <div id="view-cards" hidden></div>
       <div id="view-journal" hidden></div>
       <div id="view-feed" hidden></div>
-
-      <footer class="row">
-        <span class="muted js-username"></span>
-        <a id="admin-link" href="admin.html" hidden>Admin</a>
-        <button class="js-logout secondary small">Log out</button>
-      </footer>
+      <div id="view-settings" hidden></div>
+      <div id="view-admin" hidden></div>
     </section>
   </main>
 
@@ -62,10 +62,13 @@
   <script src="js/dom.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/views/common.js"></script>
   <script src="js/views/today.js"></script>
   <script src="js/views/cards.js"></script>
   <script src="js/views/journal.js"></script>
   <script src="js/views/feed.js"></script>
+  <script src="js/views/settings.js"></script>
+  <script src="js/views/admin.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

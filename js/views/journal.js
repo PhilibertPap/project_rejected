@@ -1,50 +1,57 @@
-// Journal: one entry per day, public or private depending on the profile setting
-function daySummary(attempts) {
-  const done = attempts.filter(a => a.result);
-  if (!done.length) return h("p", { class: "muted" }, "No challenge played.");
-  return h("ul", { class: "list compact" }, done.map(a =>
-    h("li", {}, h("span", {}, a.title), h("span", { class: "muted" }, `${RESULT_LABEL[a.result]} ${fmtPts(Game.points(a))}`))));
-}
-
+// Journal: unlimited private entries, max one public entry per day
 async function renderJournal() {
   const today = Game.today();
-  const entries = await q(sb.from("recaps").select("*").eq("user_id", state.me.id).order("day", { ascending: false }));
-  const current = entries.find(e => e.day === today);
-
-  const toggle = h("input", { type: "checkbox", checked: state.me.is_public });
-  toggle.addEventListener("change", async () => {
-    await q(sb.from("profiles").update({ is_public: toggle.checked }).eq("id", state.me.id));
-    state.me.is_public = toggle.checked;
-  });
+  const entries = await q(sb.from("recaps").select("id, day, body, is_public, created_at")
+    .eq("user_id", state.me.id).order("day", { ascending: false }).order("created_at", { ascending: false }));
+  const publishedToday = entries.some(e => e.day === today && e.is_public);
 
   const text = h("textarea", { rows: 6, placeholder: "How did today go?" });
-  text.value = current ? current.body : "";
-  const saved = h("span", { class: "muted" });
+  const publish = h("input", { type: "checkbox", checked: state.me.is_public && !publishedToday, disabled: publishedToday });
+  const warning = h("p", { class: "warn" });
+  const updateWarning = () => {
+    warning.textContent = publishedToday
+      ? "You already published today. New entries stay private."
+      : publish.checked
+        ? "Public: this entry will be visible to everyone in the feed. Only one public entry per day."
+        : "Private: only you will see this entry.";
+  };
+  publish.addEventListener("change", updateWarning);
+  updateWarning();
+
   const save = h("button", {
     onclick: async () => {
-      await q(sb.from("recaps").upsert(
-        { user_id: state.me.id, day: today, body: text.value.trim() }, { onConflict: "user_id,day" }));
-      saved.textContent = " Saved.";
-      renderJournalPast();
+      const body = text.value.trim();
+      if (!body) return;
+      const isPublic = publish.checked && !publishedToday;
+      if (isPublic && !confirm("Publish this entry? It will be visible to everyone, and it's your only public entry today.")) return;
+      save.disabled = true;
+      try {
+        await q(sb.from("recaps").insert({ day: today, body, is_public: isPublic }));
+        renderJournal();
+      } catch (err) { save.disabled = false; alert(errorText(err)); }
     },
   }, "Save entry");
 
-  el("view-journal").replaceChildren(
-    h("label", { class: "inline" }, toggle, " Public profile (entries appear in the feed)"),
-    h("h3", {}, `Today · ${today}`),
-    daySummary(state.attempts.filter(a => a.day === today)),
-    text, h("p", {}, save, saved),
-    h("div", { id: "journal-past" }));
-  renderJournalPast(entries);
+  mount(el("view-journal"),
+    h("h3", {}, `Today · ${fmtDay(today, { weekday: "long", day: "numeric", month: "long" })}`),
+    dailySummary(state.attempts.filter(a => a.day === today)),
+    text,
+    h("label", { class: "inline" }, publish, " Publish today's entry"),
+    warning,
+    save,
+    pastEntries(entries));
 }
 
-async function renderJournalPast(entries) {
-  entries = entries || await q(sb.from("recaps").select("*").eq("user_id", state.me.id).order("day", { ascending: false }));
-  const past = entries.filter(e => e.day !== Game.today());
-  el("journal-past").replaceChildren(
-    past.length ? h("h3", {}, "Past entries") : null,
-    ...past.map(e => h("article", { class: "entry" },
-      h("p", { class: "muted" }, e.day),
-      daySummary(state.attempts.filter(a => a.day === e.day)),
-      h("p", { class: "pre" }, e.body))));
+// All entries grouped by day, newest first (no comments)
+function pastEntries(entries) {
+  if (!entries.length) return null;
+  const days = [...new Set(entries.map(e => e.day))];
+  return h("div", { class: "journal-days" },
+    h("h3", {}, "All entries"),
+    days.map(day => h("section", { class: "journal-day" },
+      h("h4", {}, fmtDay(day)),
+      dailySummary(state.attempts.filter(a => a.day === day)),
+      entries.filter(e => e.day === day).map(e => h("article", { class: "entry" },
+        h("p", { class: "muted small" }, tag(e.is_public), " ", new Date(e.created_at).toLocaleTimeString("en-GB", { timeStyle: "short" })),
+        h("p", { class: "pre" }, e.body))))));
 }

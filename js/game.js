@@ -18,25 +18,35 @@ const Game = (() => {
   const points = a => (a.result ? pointsFor(a.result, a.difficulty) : 0);
   const total = attempts => attempts.reduce((s, a) => s + points(a), 0);
 
-  // Streak = consecutive days with a done card. A choke resets it; a missed day resets it.
+  // A day is validated by one Rejected or Yes. Chokes only cost points.
+  const validatedDays = attempts => new Set(attempts.filter(isDone).map(a => a.day));
+  const validatedToday = (attempts, now = today()) => validatedDays(attempts).has(now);
+
+  // Current streak: counted back from today (or yesterday if today isn't played yet)
   function streak(attempts, now = today()) {
-    let s = 0, prevDay = null, countedDay = null;
-    for (const a of attempts.filter(a => a.result).sort(byTime)) {
-      if (a.day !== prevDay) {
-        if (prevDay && a.day !== addDays(prevDay, 1)) s = 0;
-        prevDay = a.day;
-      }
-      if (a.result === "choked") { s = 0; countedDay = null; }
-      else if (countedDay !== a.day) { s += 1; countedDay = a.day; }
-    }
-    if (prevDay !== now && prevDay !== addDays(now, -1)) s = 0;
+    const days = validatedDays(attempts);
+    let d = days.has(now) ? now : addDays(now, -1), s = 0;
+    while (days.has(d)) { s++; d = addDays(d, -1); }
     return s;
   }
 
-  const validatedToday = (attempts, now = today()) =>
-    attempts.some(a => a.day === now && isDone(a));
+  function bestStreak(attempts) {
+    let best = 0, cur = 0, prev = null;
+    for (const d of [...validatedDays(attempts)].sort()) {
+      cur = prev && addDays(prev, 1) === d ? cur + 1 : 1;
+      best = Math.max(best, cur);
+      prev = d;
+    }
+    return best;
+  }
 
-  // Level moves towards the difficulty you actually handle (slightly above if done, below if choked)
+  // The card of the day = first Rejected/Yes of that day (or the first card played)
+  function dailyCard(dayAttempts) {
+    const resolved = dayAttempts.filter(a => a.result).sort(byTime);
+    return { card: resolved.find(isDone) || resolved[0] || null, more: resolved.length > 1 };
+  }
+
+  // Level moves towards the difficulty you actually handle
   function level(attempts, cfg) {
     let L = cfg.start;
     for (const a of attempts.filter(a => a.result).sort(byTime)) {
@@ -53,19 +63,29 @@ const Game = (() => {
     return 0;
   }
 
-  // First card of the day = next scripted card while the intro isn't finished; otherwise random around level
+  // First card of the day = next scripted card during the intro; otherwise random around level.
+  // Choked cards from previous days go back in the deck and come back with backlog_chance.
   function draw(data, attempts, now = today()) {
     const doneIds = new Set(attempts.filter(isDone).map(a => a.challenge_id));
-    const playedToday = attempts.some(a => a.day === now);
+    const todayIds = new Set(attempts.filter(a => a.day === now).map(a => a.challenge_id));
     const scripted = data.scripted.find(c => !doneIds.has(c.id));
-    if (scripted && !playedToday) return scripted;
+    if (scripted && !todayIds.size) return scripted;
 
-    const d = clamp(Math.round(level(attempts, data.level)) + weightedOffset(data.draw.offsets), 1, 5);
-    const recent = new Set([...attempts].sort(byTime).slice(-data.draw.avoid_recent).map(a => a.challenge_id));
+    const L = level(attempts, data.level);
+    const chokedIds = new Set(attempts.filter(a => a.result === "choked" && a.day !== now).map(a => a.challenge_id));
+    const backlog = data.pool.filter(c =>
+      chokedIds.has(c.id) && !doneIds.has(c.id) && !todayIds.has(c.id) && Math.abs(c.difficulty - L) <= 1.5);
+    if (backlog.length && Math.random() < data.draw.backlog_chance) return pick(backlog);
+
+    const d = clamp(Math.round(L) + weightedOffset(data.draw.offsets), 1, 5);
+    const recent = new Set([...attempts].sort(byTime).filter(a => a.result !== "choked")
+      .slice(-data.draw.avoid_recent).map(a => a.challenge_id));
+    todayIds.forEach(id => recent.add(id));
     const sameLevel = data.pool.filter(c => c.difficulty === d);
     const fresh = sameLevel.filter(c => !recent.has(c.id));
     return pick(fresh.length ? fresh : sameLevel.length ? sameLevel : data.pool);
   }
 
-  return { today, addDays, points, pointsFor, total, streak, validatedToday, level, draw, isDone };
+  return { today, addDays, byTime, isDone, points, pointsFor, total, streak, bestStreak,
+           validatedToday, validatedDays, dailyCard, level, draw };
 })();

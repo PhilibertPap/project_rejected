@@ -33,5 +33,5 @@ async function renderCards() {
         }, "Delete"))))
     : h("p", { class: "muted" }, "No cards yet.");
 
-  el("view-cards").replaceChildren(form, h("h3", {}, "My cards"), list);
+  mount(el("view-cards"), form, h("h3", {}, "My cards"), list);
 }

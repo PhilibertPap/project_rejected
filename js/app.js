@@ -1,26 +1,32 @@
-// App shell: auth, data loading, tabs
+// App shell: auth, data loading, routing by role
 const state = { me: null, data: null, attempts: [], cards: [] };
 const SCREENS = ["auth", "pending", "app"];
-const TABS = { today: () => renderToday(), cards: () => renderCards(), journal: () => renderJournal(), feed: () => renderFeed() };
+const RENDER = {
+  today: () => renderToday(), cards: () => renderCards(), journal: () => renderJournal(),
+  feed: () => renderFeed(), settings: () => renderSettings(), admin: () => renderAdmin(),
+};
+const PLAYER_TABS = ["today", "cards", "journal", "feed", "settings"];
+const ADMIN_TABS = ["admin", "settings"];
 
 const showScreen = id => SCREENS.forEach(s => (el(s).hidden = s !== id));
 const level = () => Game.level(state.attempts, state.data.level);
 
 async function loadData() {
-  const [data, attempts, cards] = await Promise.all([
-    fetch("data/challenges.json", { cache: "no-store" }).then(r => r.json()),
+  state.data = await fetch("data/challenges.json", { cache: "no-store" }).then(r => r.json());
+  if (state.me.is_admin) return;
+  [state.attempts, state.cards] = await Promise.all([
     q(sb.from("attempts").select("*").eq("user_id", state.me.id).order("created_at")),
     q(sb.from("custom_cards").select("*").eq("user_id", state.me.id).order("created_at")),
   ]);
-  Object.assign(state, { data, attempts, cards });
 }
 
 function renderStats() {
+  if (state.me.is_admin) return;
   el("stats").textContent =
     `Streak ${Game.streak(state.attempts)} · ${Game.total(state.attempts)} pts · Level ${level().toFixed(1)}`;
 }
 
-// Card content for an attempt (from the JSON pack or the user's own cards)
+// Card content for an attempt (JSON pack or the user's own cards)
 function cardFor(attempt) {
   if (attempt.challenge_id && attempt.challenge_id.startsWith("custom-")) {
     const c = state.cards.find(c => `custom-${c.id}` === attempt.challenge_id);
@@ -31,30 +37,41 @@ function cardFor(attempt) {
 }
 
 function route() {
-  const tab = TABS[location.hash.slice(1)] ? location.hash.slice(1) : "today";
-  for (const t of Object.keys(TABS)) {
-    el(`view-${t}`).hidden = t !== tab;
-    document.querySelector(`nav a[href="#${t}"]`).classList.toggle("active", t === tab);
-  }
+  const tabs = state.me.is_admin ? ADMIN_TABS : PLAYER_TABS;
+  const hash = location.hash.slice(1);
+  const tab = tabs.includes(hash) ? hash : tabs[0];
+  Object.keys(RENDER).forEach(t => (el(`view-${t}`).hidden = t !== tab));
+  document.querySelectorAll("nav a, header a").forEach(a =>
+    a.classList.toggle("active", a.getAttribute("href") === `#${tab}`));
   renderStats();
-  TABS[tab]().catch(err => (el(`view-${tab}`).textContent = errorText(err)));
+  RENDER[tab]().catch(err => mount(el(`view-${tab}`), h("p", { class: "msg" }, errorText(err))));
 }
 
 async function render() {
   el("auth-msg").textContent = "";
+  el("settings-link").hidden = true;
   try {
     state.me = await getProfile();
     if (!state.me) return showScreen("auth");
     document.querySelectorAll(".js-username").forEach(e => (e.textContent = state.me.username));
     if (!state.me.approved) return showScreen("pending");
     await loadData();
-    el("admin-link").hidden = !state.me.is_admin;
+    el("player-nav").hidden = state.me.is_admin;
+    el("admin-nav").hidden = !state.me.is_admin;
+    el("stats").hidden = state.me.is_admin;
+    el("settings-link").hidden = false;
     showScreen("app");
     route();
   } catch (err) {
     showScreen("auth");
     el("auth-msg").textContent = errorText(err);
   }
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  location.hash = "";
+  render();
 }
 
 el("auth-form").addEventListener("submit", async e => {
@@ -71,8 +88,6 @@ el("auth-form").addEventListener("submit", async e => {
   render();
 });
 
-document.querySelectorAll(".js-logout").forEach(btn =>
-  btn.addEventListener("click", async () => { await sb.auth.signOut(); render(); }));
-
+document.querySelectorAll(".js-logout").forEach(btn => btn.addEventListener("click", logout));
 window.addEventListener("hashchange", () => { if (!el("app").hidden) route(); });
 render();

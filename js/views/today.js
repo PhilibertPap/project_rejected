@@ -5,9 +5,6 @@ const RESULTS = [
   { key: "accepted", label: "They said yes", cls: "secondary" },
   { key: "choked", label: "Choked", cls: "secondary btn-choked" },
 ];
-const RESULT_LABEL = { rejected: "Rejected", accepted: "Yes", choked: "Choked" };
-
-const dots = n => h("span", { class: "dots", title: `Difficulty ${n}` }, "●".repeat(n) + "○".repeat(5 - n));
 
 function cardFront(card) {
   return h("div", { class: "card-face card-front" },
@@ -39,9 +36,16 @@ async function resolveAttempt(attempt, result) {
 }
 
 function statusLine(todays) {
-  if (Game.validatedToday(state.attempts)) return h("p", { class: "status ok" }, `Day validated. Streak ${Game.streak(state.attempts)}.`);
-  if (todays.some(a => a.result === "choked")) return h("p", { class: "status" }, "Choked. Streak reset — draw another card to start again.");
-  return h("p", { class: "status" }, "Today's card is waiting.");
+  const resolved = todays.filter(a => a.result).sort(Game.byTime);
+  const last = resolved[resolved.length - 1];
+  return [
+    Game.validatedToday(state.attempts)
+      ? h("p", { class: "status ok" }, `Day validated. Streak ${Game.streak(state.attempts)}.`)
+      : h("p", { class: "status" }, resolved.length ? "Day not validated yet — draw another card." : "Today's card is waiting."),
+    last && last.result === "choked"
+      ? h("p", { class: "muted center" }, "Choked. That card goes back in the deck for later.")
+      : null,
+  ];
 }
 
 function faceDown(label) {
@@ -80,8 +84,6 @@ function faceUp(attempt) {
   return [card, h("div", { class: "actions" }, buttons)];
 }
 
-const fmtPts = p => (p > 0 ? `+${p}` : `${p}`);
-
 function customPicker() {
   if (!state.cards.length) return h("p", { class: "muted center" }, h("a", { href: "#cards" }, "Write your own cards"), " to play them here.");
   const select = h("select", {}, state.cards.map(c => h("option", { value: c.id }, `${c.title} (${c.difficulty})`)));
@@ -97,7 +99,7 @@ function customPicker() {
 }
 
 function todayHistory(todays) {
-  const done = todays.filter(a => a.result);
+  const done = todays.filter(a => a.result).sort(Game.byTime);
   if (!done.length) return null;
   return h("ul", { class: "list" }, done.map(a =>
     h("li", {}, h("span", {}, a.title), h("span", { class: `muted res-${a.result}` }, `${RESULT_LABEL[a.result]} ${fmtPts(Game.points(a))}`))));
@@ -106,9 +108,11 @@ function todayHistory(todays) {
 async function renderToday() {
   const todays = state.attempts.filter(a => a.day === Game.today());
   const pending = todays.find(a => !a.result);
-  el("view-today").replaceChildren(
+  const label = Game.validatedToday(state.attempts) ? "Tap to draw another card (optional)"
+    : todays.length ? "Tap to draw another card" : "Tap to draw today's card";
+  mount(el("view-today"),
     statusLine(todays),
-    ...(pending ? faceUp(pending) : faceDown(todays.length ? "Tap to draw another card (optional)" : "Tap to draw today's card")),
+    pending ? faceUp(pending) : faceDown(label),
     !pending && todays.length ? customPicker() : null,
     todayHistory(todays));
 }
