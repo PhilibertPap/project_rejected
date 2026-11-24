@@ -237,7 +237,7 @@ function resultsBar(attempts) {
   const since = Game.addDays(Game.today(), -29);
   const res = attempts.filter(a => a.result && a.day >= since);
   if (!res.length) return h("p", { class: "muted small" }, "No cards played in the last 30 days.");
-  const parts = [["rejected", "Rejected", "#0e0e0f"], ["accepted", "Yes", "#ffffff"], ["choked", "Choked", "#ffffff"]]
+  const parts = [["rejected", "Rejected", VIZ["ink-rejected"]], ["accepted", "Yes", VIZ["ink-accepted"]], ["choked", "Choked", VIZ["ink-choked"]]]
     .map(([k, label, ink]) => ({ k, label, ink, n: res.filter(a => a.result === k).length }));
   return [
     h("div", { class: "segbar" }, parts.filter(p => p.n).map(p => {

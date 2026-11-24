@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="night">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>project_rejected</title>
-  <meta name="theme-color" content="#0e0e0f">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+  <meta name="theme-color" content="#15161f">
+  <script>try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "night"; } catch (e) {}</script>
+  <link rel="preload" href="fonts/InstrumentSans-Regular.woff" as="font" type="font/woff" crossorigin>
+  <link rel="preload" href="fonts/ArchivoBlack-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <main class="container">
-    <header class="row between">
+    <header class="appbar">
       <h1 class="brand" id="brand">Project Rejected</h1>
+      <div class="appbar-right">
+      <div id="stats" class="hud" hidden></div>
       <div id="profile-menu" class="profile-menu" hidden>
         <button id="profile-btn" class="profile-btn avatar-sm mine" aria-label="Profile" aria-haspopup="true" aria-expanded="false"></button>
         <div id="profile-pop" class="profile-pop" hidden>
@@ -22,6 +24,7 @@
           <a href="#settings">Settings</a>
           <button class="js-logout">Log out</button>
         </div>
+      </div>
       </div>
     </header>
 
@@ -56,18 +59,17 @@
     </section>
 
     <section id="app" hidden>
-      <nav id="player-nav">
-        <a href="#today">Story</a>
-        <a href="#play">Side quests</a>
-        <a href="#journal">Journal</a>
-        <a href="#team">Team</a>
-      </nav>
-      <nav id="admin-nav">
-        <a href="#admin">Users</a>
-        <a href="#catalog">Cards</a>
-        <a href="#feed">Teams</a>
-      </nav>
-      <p id="stats" class="stats"></p>
+      <nav id="player-nav" class="tabbar" aria-label="Main"><div class="tabbar-inner">
+        <a href="#today"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="5.5" y="3" width="13" height="18" rx="2.5"/><path d="M12 8.2l2.6 3.8-2.6 3.8-2.6-3.8z"/></svg></span>Story</a>
+        <a href="#play"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z"/></svg></span>Side quests</a>
+        <a href="#journal"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M4.5 19.5h4l10.3-10.3a2.1 2.1 0 0 0-3-3L5.5 16.5z"/><path d="M14.3 7.7l3 3"/></svg></span>Journal</a>
+        <a href="#team"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c0-3.2 2.5-5.6 5.5-5.6s5.5 2.4 5.5 5.6"/><circle cx="16.8" cy="9.3" r="2.5"/><path d="M16.2 14.1c2.5.2 4.3 2.4 4.3 5.4"/></svg></span>Team</a>
+      </div></nav>
+      <nav id="admin-nav" class="tabbar" aria-label="Admin"><div class="tabbar-inner">
+        <a href="#admin"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.9 3.1-6.8 7-6.8s7 2.9 7 6.8"/></svg></span>Users</a>
+        <a href="#catalog"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="6" width="11" height="15" rx="2" transform="rotate(-8 9 13.5)"/><rect x="9.5" y="3.5" width="11" height="15" rx="2"/></svg></span>Cards</a>
+        <a href="#feed"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c0-3.2 2.5-5.6 5.5-5.6s5.5 2.4 5.5 5.6"/><circle cx="16.8" cy="9.3" r="2.5"/><path d="M16.2 14.1c2.5.2 4.3 2.4 4.3 5.4"/></svg></span>Teams</a>
+      </div></nav>
 
       <div id="view-today"></div>
       <div id="view-play" hidden></div>

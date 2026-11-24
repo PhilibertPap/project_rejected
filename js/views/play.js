@@ -60,7 +60,7 @@ async function renderPlay() {
   }
 
   mount(el("view-play"),
-    h("p", { class: "eyebrow center play-title" }, "Optional · wherever you are"),
+    pageHead("Side quests", "Optional cards for wherever you are."),
     main,
     h("p", { class: "muted small center" }, note),
     resultList(todays));

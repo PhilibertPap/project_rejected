@@ -24,7 +24,7 @@ async function renderTeam() {
   mount(el("view-team"),
     h("div", { class: "team-head" },
       h("h2", { class: "team-name" }, team.name),
-      h("p", { class: "muted small" }, tag(team.is_public), ` ${members.length}/${TEAM_MAX} players`)),
+      h("p", { class: "muted" }, tag(team.is_public), ` ${members.length} of ${TEAM_MAX} players`)),
     members.length < TEAM_MAX ? inviteButton() : null,
     requests.length ? requestList(requests, members.length) : null,
     ranking(members, attempts),
@@ -46,9 +46,7 @@ async function renderNoTeam() {
   }, "Create");
 
   mount(el("view-team"),
-    h("div", { class: "team-head" },
-      h("h2", { class: "team-name" }, "Team up"),
-      h("p", { class: "muted" }, `Up to ${TEAM_MAX} friends. See each other's week, cheer, compare.`)),
+    pageHead("Team", `Play with up to ${TEAM_MAX} friends: a weekly ranking, shared journal entries, cheers.`),
     h("section", { class: "panel" },
       h("h3", {}, "Create a team"),
       h("div", { class: "row" }, name, create),
@@ -68,9 +66,9 @@ async function renderNoTeam() {
 
 // ---- team parts
 function inviteButton() {
-  const note = h("span", { class: "muted small" });
+  const note = h("span", { class: "muted small" }, "Friends who open the link join directly.");
   const btn = h("button", {
-    class: "secondary invite-btn",
+    class: "invite-btn",
     onclick: async () => {
       const code = await q(sb.rpc("my_invite_code"));
       const url = `${location.origin}${location.pathname}#join=${code}`;
@@ -85,8 +83,8 @@ function inviteButton() {
 }
 
 function requestList(requests, size) {
-  return h("section", { class: "panel" },
-    h("h3", {}, `Join requests · ${requests.length}`),
+  return h("section", { class: "callout" },
+    h("h3", {}, requests.length === 1 ? "1 player wants to join" : `${requests.length} players want to join`),
     requests.map(r => h("div", { class: "team-row" },
       avatar(r.profile.username),
       h("strong", { class: "grow" }, r.profile.username),
@@ -109,13 +107,13 @@ function ranking(members, attempts) {
 
   return h("section", { class: "ranking" },
     h("h3", {}, "This week"),
-    rows.map((r, i) => h("div", { class: `rank-row${r.id === state.me.id ? " me" : ""}` },
+    h("div", { class: "rank-list" }, rows.map((r, i) => h("div", { class: `rank-row${r.id === state.me.id ? " me" : ""}` },
       h("span", { class: "rank-pos" }, String(i + 1)),
       avatar(r.name, r.id === state.me.id),
       h("div", { class: "grow" },
         h("strong", {}, r.name),
         h("span", { class: "muted small rank-sub" }, `Streak ${r.streak} · Rating ${fmtNum(r.rating)}`)),
-      h("span", { class: `rank-pts${r.week < 0 ? " neg" : ""}` }, fmtPts(r.week)))),
+      h("span", { class: `rank-pts${r.week < 0 ? " neg" : r.week === 0 ? " zero" : ""}` }, fmtPts(r.week))))),
     h("p", { class: "muted small center" }, "Points earned since Monday."));
 }
 

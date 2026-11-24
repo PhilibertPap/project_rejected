@@ -22,11 +22,14 @@ async function loadData() {
 
 const streak = (attempts = state.attempts) => Game.streakInfo(attempts, state.cards, state.data);
 
-// Compact line on the other tabs (Today has the stat tiles)
+// Streak and rating in the app bar (Story has the full tiles)
 function renderStats(tab) {
   el("stats").hidden = state.me.is_admin || tab === "today";
   if (state.me.is_admin) return;
-  el("stats").textContent = `Rating ${fmtNum(state.R.st.rating)} · Streak ${streak().current}`;
+  const s = streak().current;
+  mount(el("stats"),
+    h("span", { class: `hud-pill hud-streak${s ? "" : " cold"}`, title: "Streak (days in a row)" }, icon("flame"), String(s)),
+    h("span", { class: "hud-pill hud-rating", title: "Rating" }, icon("diamond"), fmtNum(state.R.st.rating)));
 }
 
 // Card content for an attempt (catalogue, falling back to what the attempt stored)
@@ -40,6 +43,7 @@ function route() {
   const hash = location.hash.slice(1);
   const tab = tabs.includes(hash) ? hash : tabs[0];
   Object.keys(RENDER).forEach(t => (el(`view-${t}`).hidden = t !== tab));
+  document.body.dataset.tab = tab;
   document.querySelectorAll("nav a, header a").forEach(a =>
     a.classList.toggle("active", a.getAttribute("href") === `#${tab}`));
   el("profile-btn").classList.toggle("active", tab === "deck" || tab === "settings");

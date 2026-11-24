@@ -27,9 +27,10 @@ async function renderDeck() {
   };
 
   mount(el("view-deck"),
+    pageHead("Deck", "Every card you've done. A gold edge means you got a no on it."),
     h("div", { class: "deck-head" },
       h("p", { class: "tile-value" }, `${owned}`, h("small", {}, ` / ${total}`)),
-      h("p", { class: "muted small" }, "cards collected · a white edge = you got a no on it")),
+      h("p", { class: "muted small" }, "cards collected")),
     sets.map(s => h("section", { class: "deck-set" },
       h("h3", {}, s.name, h("span", { class: "muted small" }, `  ${s.cards.filter(c => col[c.id]).length} / ${s.cards.length}`)),
       h("div", { class: "deck-grid" }, s.cards.map(c => tile(c, s.story))))));

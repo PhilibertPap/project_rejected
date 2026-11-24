@@ -7,8 +7,9 @@ function storyHeader(S, now) {
   const pct = Math.round((100 * (S.total - S.remaining.length)) / Math.max(1, S.total));
   return h("div", { class: "story-head" },
     h("div", { class: "row between" },
-      h("span", { class: "eyebrow" }, S.finished ? "Season 2" : `Season 1 · Day ${Math.min(S.position, S.total)} / ${S.total}`),
-      Game.isSunday(now) && !S.finished ? h("span", { class: "tag" }, "Sunday card") : null),
+      h("span", { class: "story-day" }, S.finished ? "Season 2" : `Day ${Math.min(S.position, S.total)}`),
+      Game.isSunday(now) && !S.finished ? h("span", { class: "tag tag-public" }, "Sunday card")
+        : S.finished ? null : h("span", { class: "eyebrow" }, `of ${S.total} · Season 1`)),
     S.finished ? null : h("div", { class: "progress" }, h("i", { style: `width:${pct}%` })));
 }
 

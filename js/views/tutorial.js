@@ -19,7 +19,7 @@ const TOUR = [
   { target: 'nav a[href="#team"]', title: "Team",
     body: ["Team up with up to 7 friends: weekly ranking, shared entries, 👍 and 💪. Invite them with a link."] },
   { target: "#profile-btn", title: "You",
-    body: ["Your Deck — every card you've done, with a white edge when you got a no — plus settings, password and this tutorial."] },
+    body: ["Your Deck — every card you've done, with a gold edge when you got a no — plus settings, theme, password and this tutorial."] },
 ];
 
 function startTutorial() {

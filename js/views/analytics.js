@@ -1,10 +1,14 @@
 // Stat tiles + analytics tabs (Week / Heatmap / Rating / Stats)
 // Colors: one-hue ordinal ramp (validated: monotone, visible steps, light end >= 2:1 on surface)
 // Dark surface #0e0e0f: brighter = better day (validated ordinal ramp)
-const VIZ = {
-  empty: "#1f1f22", choked: "#184f95", accepted: "#3987e5", rejected: "#86b6ef",
-  line: "#f2f2f0", grid: "#2a2a2e", surface: "#0e0e0f",
-};
+// Colours come from the theme (css --viz-*); refreshViz() re-reads them after a theme change
+const VIZ = {};
+function refreshViz() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of ["empty", "choked", "accepted", "rejected", "line", "grid", "surface", "ink-rejected", "ink-accepted", "ink-choked"])
+    VIZ[k] = cs.getPropertyValue(`--viz-${k}`).trim();
+}
+refreshViz();
 const STATE_LABEL = { choked: "Choked", accepted: "Yes", rejected: "Rejected" };
 const ANALYTICS_TABS = ["Week", "Heatmap", "Rating", "Stats"];
 const fmtNum = n => n.toLocaleString("en-GB");
@@ -199,7 +203,7 @@ function ratingView() {
   const line = vals.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
   const area = `${line}L${x(n - 1).toFixed(1)},${y(0)}L${x(0).toFixed(1)},${y(0)}Z`;
 
-  const cross = svgEl("line", { y1: T, y2: H - B, stroke: "#8d8d93", "stroke-width": 1, visibility: "hidden" });
+  const cross = svgEl("line", { y1: T, y2: H - B, stroke: VIZ.grid, "stroke-width": 1, visibility: "hidden" });
   const hoverDot = svgEl("circle", { r: 4, fill: VIZ.line, stroke: VIZ.surface, "stroke-width": 2, visibility: "hidden" });
   const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, class: "chart", role: "img", "aria-label": `Rating over the last ${n} days, now ${state.R.st.rating}` },
     [0, 0.5, 1].map(f => [

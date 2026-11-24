@@ -39,3 +39,5 @@ Daily rejection therapy challenges. https://philibertpap.github.io/project_rejec
 - `js/game.js` — story progression, points, streak, skill, situation draw, collection (no DOM)
 - `js/app.js` — auth, data loading, tabs · `js/views/*` — one file per tab (`cardui.js` = shared card UI)
 - `tools/cards.py` — card catalogue → seed SQL
+- `css/style.css` — themes (night / day / black) as CSS variables at the top; one accent colour per tab
+- `fonts/` — Archivo Black + Instrument Sans (OFL, self-hosted)

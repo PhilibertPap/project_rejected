@@ -33,6 +33,7 @@ async function renderJournal() {
   publish.addEventListener("change", () => (save.textContent = isPublicLabel(publish)));
 
   mount(el("view-journal"),
+    pageHead("Journal"),
     h("section", { class: "composer" },
       h("div", { class: "composer-head" },
         h("span", { class: "eyebrow" }, `Today · ${fmtDay(today, { weekday: "long", day: "numeric", month: "long" })}`)),
@@ -61,7 +62,7 @@ function timeline(entries) {
       h("div", { class: "tl-body" },
         dailySummary(state.attempts.filter(a => a.day === day)),
         entries.filter(e => e.day === day).map(e => h("article", { class: "tl-entry" },
-          h("div", { class: "tl-meta" }, tag(e.is_public),
+          h("div", { class: "tl-meta" }, tag(e.is_public, "Shared"),
             h("span", { class: "muted small" }, new Date(e.created_at).toLocaleTimeString("en-GB", { timeStyle: "short" }))),
           h("p", { class: "pre" }, e.body)))))));
 }
