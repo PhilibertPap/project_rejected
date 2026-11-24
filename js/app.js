@@ -42,6 +42,8 @@ function route() {
   Object.keys(RENDER).forEach(t => (el(`view-${t}`).hidden = t !== tab));
   document.querySelectorAll("nav a, header a").forEach(a =>
     a.classList.toggle("active", a.getAttribute("href") === `#${tab}`));
+  el("profile-btn").classList.toggle("active", tab === "deck" || tab === "settings");
+  closeProfile();
   renderStats(tab);
   tip.hide();
   RENDER[tab]().catch(err => mount(el(`view-${tab}`), h("p", { class: "msg" }, errorText(err))));
@@ -49,7 +51,7 @@ function route() {
 
 async function render() {
   el("auth-msg").textContent = "";
-  el("settings-link").hidden = true;
+  el("profile-menu").hidden = true;
   try {
     state.me = await getProfile();
     if (!state.me) return showScreen("auth");
@@ -58,7 +60,9 @@ async function render() {
     await loadData();
     el("player-nav").hidden = state.me.is_admin;
     el("admin-nav").hidden = !state.me.is_admin;
-    el("settings-link").hidden = false;
+    el("profile-menu").hidden = false;
+    el("profile-btn").textContent = state.me.username[0].toUpperCase();
+    document.querySelectorAll(".js-player-only").forEach(e => (e.hidden = state.me.is_admin));
     showScreen("app");
     route();
     sb.rpc("touch").then(() => {}, () => {});
@@ -88,6 +92,18 @@ el("auth-form").addEventListener("submit", async e => {
   e.target.reset();
   render();
 });
+
+// Profile menu: avatar top right opens Deck / Settings / Log out; closes on outside click or Esc
+function closeProfile() { el("profile-pop").hidden = true; el("profile-btn").setAttribute("aria-expanded", "false"); }
+el("profile-btn").addEventListener("click", e => {
+  e.stopPropagation();
+  const open = el("profile-pop").hidden;
+  el("profile-pop").hidden = !open;
+  el("profile-btn").setAttribute("aria-expanded", String(open));
+});
+document.addEventListener("click", e => { if (!el("profile-menu").contains(e.target)) closeProfile(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeProfile(); });
+el("profile-pop").addEventListener("click", e => { if (e.target.closest("a")) closeProfile(); });
 
 document.querySelectorAll(".js-logout").forEach(btn => btn.addEventListener("click", logout));
 window.addEventListener("hashchange", () => { if (!el("app").hidden) route(); });

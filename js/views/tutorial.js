@@ -12,16 +12,14 @@ const TOUR = [
     body: ["Rating goes up every time you ask. Streak counts the days in a row with at least one ask."] },
   { target: ".analytics .tabs", title: "Your progress",
     body: ["Your week, the cards you've collected by colour, a heatmap of every day, your rating curve and your stats."] },
-  { target: 'nav a[href="#play"]', title: "Extra",
+  { target: 'nav a[href="#play"]', title: "Side quests",
     body: ["Optional. Draw extra cards for where you are — class, café, park — alone or with a friend, serious or fun."] },
-  { target: 'nav a[href="#deck"]', title: "Deck",
-    body: ["Every card you do goes into your collection. Get a no on it and it gets a white edge."] },
   { target: 'nav a[href="#journal"]', title: "Journal",
     body: ["Write how it went: before, during, after. Keep it private, or publish one entry a day to the feed."] },
   { target: 'nav a[href="#feed"]', title: "Feed",
     body: ["See how the others are doing. React with 👍 or 💪, and reply."] },
-  { target: "#settings-link", title: "Settings",
-    body: ["Your profile, stats, password — and this tutorial, if you want it again."] },
+  { target: "#profile-btn", title: "You",
+    body: ["Your Deck — every card you've done, with a white edge when you got a no — plus settings, password and this tutorial."] },
 ];
 
 function startTutorial() {

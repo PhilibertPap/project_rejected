@@ -408,3 +408,14 @@ button.danger:hover { background: var(--error); color: var(--bg); }
 .story-row .grow { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .story-row select { width: 5.8rem; flex: none; }
 .story-row input[type="date"] { width: 8.6rem; flex: none; }
+
+/* v9: profile menu (top right) */
+.profile-menu { position: relative; }
+.profile-btn { cursor: pointer; padding: 0; font-size: 1rem; }
+.profile-btn.active, .profile-btn[aria-expanded="true"] { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--fg); }
+.profile-pop { position: absolute; right: 0; top: calc(100% + 0.5rem); z-index: 50; min-width: 11rem; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 0.35rem; box-shadow: 0 10px 30px rgba(0,0,0,0.45); }
+.profile-pop[hidden] { display: none; }
+.profile-name { margin: 0; padding: 0.5rem 0.75rem 0.4rem; font-size: 0.8rem; color: var(--muted); border-bottom: 1px solid var(--line); margin-bottom: 0.25rem; }
+.profile-pop a, .profile-pop button { display: block; width: 100%; text-align: left; padding: 0.6rem 0.75rem; border: none; border-radius: 6px; background: transparent; color: var(--fg); font: inherit; font-size: 0.95rem; font-weight: 500; text-decoration: none; cursor: pointer; }
+.profile-pop a:hover, .profile-pop button:hover, .profile-pop a.active { background: var(--surface-2); }
+.profile-pop button.js-logout { color: var(--muted); }

@@ -36,7 +36,7 @@ async function renderPlay() {
   const doneCount = todays.filter(Game.isDone).length;
   const note = doneCount >= state.data.scoring.situation_daily.length - 1
     ? "Points are maxed for today — cards still go in your deck."
-    : `Extra cards: ${doneCount} done today${doneCount === 1 ? " · one more validates the day" : ""}.`;
+    : `Side quests: ${doneCount} done today${doneCount === 1 ? " · one more validates the day" : ""}.`;
 
   let main;
   if (pending) {
@@ -60,7 +60,7 @@ async function renderPlay() {
   }
 
   mount(el("view-play"),
-    h("p", { class: "eyebrow center play-title" }, "Extra cards · optional"),
+    h("p", { class: "eyebrow center play-title" }, "Optional · wherever you are"),
     main,
     h("p", { class: "muted small center" }, note),
     resultList(todays));

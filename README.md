@@ -4,7 +4,7 @@ Daily rejection therapy challenges. https://philibertpap.github.io/project_rejec
 
 ## Rules
 - **Story tab**: one scripted card a day, 30 days (Season 1), then a new card a day (Season 2). Sunday = the week's Sunday variant. "Not today" swaps with the next card of the week (checkpoint stays last).
-- **Extra tab (situation cards)**: optional cards; one Draw button, optional chips (place, with a friend, Fun, Crush from day 15). One reroll per draw.
+- **Side quests tab (situation cards)**: optional cards; one Draw button, optional chips (place, with a friend, Fun, Crush from day 15). One reroll per draw.
 - **Deck**: every card done (Rejected or Yes) is collected; a no gives it a white edge.
 - Day validated = story card done, or 2 situation cards done. Streak freezes (max 2) are earned on story checkpoints and every 10 situation cards, spent automatically on a missed day.
 - Journal, Feed, Admin as before. Game design doc: Claude Doc "Project Rejected — Game design & cartes".
@@ -18,7 +18,7 @@ Daily rejection therapy challenges. https://philibertpap.github.io/project_rejec
 ## Rating (public) — `scoring` in data/config.json
 - Starts at 0, never below 0. Base = 100 + 15 × (difficulty − 1).
 - Yes = base, Rejected = 2 × base. × 0.75–1.25 depending on how hard the card was *for you* (Elo-style).
-- Daily card: + 2 % per streak day (max + 30 %). Extra cards the same day: × 0.5, 0.25, 0.1.
+- Daily card: + 2 % per streak day (max + 30 %). Side quests: × 0.4, then 100 / 50 / 25 / 0 % within the day; their chokes cost half.
 - Choked: about −20 to −60 (more if the card was easy for you, halved on extra cards).
 
 ## Skill (hidden) — `skill` in data/config.json

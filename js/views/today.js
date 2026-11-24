@@ -55,7 +55,7 @@ async function renderToday() {
     main = [
       collectedCard(doneStory[0]),
       h("p", { class: "muted center" }, "Today's card is collected. See you tomorrow."),
-      h("p", { class: "center" }, h("a", { class: "button-link", href: "#play" }, "Want more? Extra cards →")),
+      h("p", { class: "center" }, h("a", { class: "button-link", href: "#play" }, "Want more? Side quests →")),
     ];
   } else {
     const label = triedToday ? "Tap to try again" : "Tap to reveal today's card";
