@@ -102,6 +102,22 @@ function faceDownCard(label, onFlip, after) {
   return [card, h("p", { class: "muted center" }, label)];
 }
 
+// "You asked N times, X said yes": most people say yes more than you'd think
+let allPlayersYes = null;
+function yesRate() {
+  const asks = state.attempts.filter(Game.isDone);
+  const yes = asks.filter(a => a.result === "accepted").length;
+  const line = h("p", { class: "yes-rate" });
+  const pct = (a, b) => Math.round((100 * a) / b);
+  const fill = () => mount(line,
+    asks.length ? [h("b", {}, `${pct(yes, asks.length)}% yes`), ` · you asked ${asks.length} time${asks.length === 1 ? "" : "s"}, ${yes} said yes`] : null,
+    allPlayersYes && allPlayersYes.asks >= 20
+      ? h("span", { class: "muted" }, `${asks.length ? " · " : ""}all players: ${pct(allPlayersYes.yes, allPlayersYes.asks)}% yes`) : null);
+  fill();
+  if (!allPlayersYes) sb.rpc("yes_rate").then(({ data }) => { if (data && data[0]) { allPlayersYes = data[0]; fill(); } }, () => {});
+  return line;
+}
+
 // Face-up card with the three result buttons; `extra` = small actions under them (Not today, Reroll)
 function faceUpCard(attempt, after, extra = null) {
   const card = cardEl(cardFront(cardFor(attempt)), true);

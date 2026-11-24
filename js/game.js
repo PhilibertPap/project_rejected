@@ -193,16 +193,12 @@ const Game = (() => {
     return weights.length - 1;
   }
 
-  // opts: { place: 'any' | <place>, duo, crush, tone: 'serious' | 'fun' }
+  // opts: { place: 'any' | <place>, duo (cards for two), crush (shown as Flirt), tone: 'serious' (Progress) | 'fun' }
   function situationPool(cards, cfg, opts) {
     const base = cards.filter(c => c.mode === "situation" && c.active);
     const inPlace = c => (opts.place === "any" ? cfg.anywhere.includes(c.place) : c.place === opts.place);
-    const filters = [
-      c => inPlace(c) && c.tone === opts.tone && (opts.duo || !c.duo) && c.crush === !!opts.crush,
-      c => inPlace(c) && (opts.duo || !c.duo) && c.crush === !!opts.crush,            // drop tone
-      c => (opts.duo || !c.duo) && c.crush === !!opts.crush && c.tone === opts.tone,  // drop place
-      c => (opts.duo || !c.duo) && c.crush === !!opts.crush,                           // drop both
-    ];
+    const match = c => c.tone === opts.tone && c.duo === !!opts.duo && c.crush === !!opts.crush;
+    const filters = [c => inPlace(c) && match(c), match];  // relax the place only
     for (const f of filters) { const pool = base.filter(f); if (pool.length) return pool; }
     return [];
   }

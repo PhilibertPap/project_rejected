@@ -4,7 +4,7 @@ Daily rejection therapy challenges. https://philibertpap.github.io/project_rejec
 
 ## Rules
 - **Story tab**: one scripted card a day, 30 days (Season 1), then a new card a day (Season 2). Sunday = the week's Sunday variant. "Not today" swaps with the next card of the week (checkpoint stays last).
-- **Side quests tab (situation cards)**: optional cards; one Draw button, optional chips (place, with a friend, Fun, Crush from day 15). One reroll per draw.
+- **Side quests tab (situation cards)**: optional cards; one Draw button, settings: place, mode (Progress / Fun), With a friend (cards for two), Flirt. One reroll per draw.
 - **Deck**: every card done (Rejected or Yes) is collected; a no gives it a white edge.
 - Day validated = story card done, or 2 situation cards done. Streak freezes (max 2) are earned on story checkpoints and every 10 situation cards, spent automatically on a missed day.
 - Journal, Feed, Admin as before. Game design doc: Claude Doc "Project Rejected — Game design & cartes".

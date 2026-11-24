@@ -13,7 +13,7 @@ const TOUR = [
   { target: ".analytics .tabs", title: "Your progress",
     body: ["Your week, the cards you've collected by colour, a heatmap of every day, your rating curve and your stats."] },
   { target: 'nav a[href="#play"]', title: "Side quests",
-    body: ["Optional. Draw extra cards for where you are — class, café, park — alone or with a friend, serious or fun."] },
+    body: ["Optional cards for where you are. Pick Progress for real asks or Fun for absurd ones, alone or with a friend."] },
   { target: 'nav a[href="#journal"]', title: "Journal",
     body: ["Write how it went: before, during, after. Keep it private, or share one entry a day with your team."] },
   { target: 'nav a[href="#team"]', title: "Team",

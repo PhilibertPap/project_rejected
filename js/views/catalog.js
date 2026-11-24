@@ -72,7 +72,7 @@ function cardForm(card) {
     h("label", {}, "Title", f.title),
     h("label", {}, "Challenge", f.body),
     h("label", {}, "Tip", f.tip),
-    h("div", { class: "row" }, check(f.duo, "Duo"), check(f.fun, "Fun"), check(f.crush, "Crush"), check(f.checkpoint, "Checkpoint"), check(f.active, "Active")),
+    h("div", { class: "row" }, check(f.duo, "Duo"), check(f.fun, "Fun"), check(f.crush, "Flirt"), check(f.checkpoint, "Checkpoint"), check(f.active, "Active")),
     msg,
     h("div", { class: "row" },
       h("button", { type: "submit" }, isNew ? "Add card" : "Save"),

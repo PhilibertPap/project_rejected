@@ -70,6 +70,7 @@
 :root {
   /* paper cards: same in every theme */
   --paper: #f8f7f3; --paper-ink: #1a1b25; --paper-muted: #636779; --paper-line: #dedde4;
+  --suit-1: var(--green); --suit-2: var(--blue); --suit-3: var(--gold); --suit-4: var(--ruby); --suit-5: var(--violet);
   --p-green: #12814a; --p-blue: #2160d4; --p-gold: #a46f00; --p-ruby: #cc2b62; --p-violet: #6448d4;
   --font: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --display: "Archivo Black", "Instrument Sans", system-ui, sans-serif;

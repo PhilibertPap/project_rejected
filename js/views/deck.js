@@ -4,7 +4,7 @@ async function renderDeck() {
   const S = Game.storyState(state.cards, state.attempts);
   const active = state.cards.filter(c => c.active);
   const sets = [
-    { name: "Season 1", cards: active.filter(c => c.mode === "story").sort((a, b) => a.day - b.day), story: true },
+    { name: "Story", cards: active.filter(c => c.mode === "story").sort((a, b) => a.day - b.day), story: true },
     { name: "Sundays", cards: active.filter(c => c.mode === "sunday").sort((a, b) => a.week - b.week), story: true },
     ...PLACES.slice(1).map(p => ({ name: PLACE_LABEL[p], cards: active.filter(c => c.mode === "situation" && c.place === p)
       .sort((a, b) => a.difficulty - b.difficulty || a.title.localeCompare(b.title)) })),
@@ -15,15 +15,15 @@ async function renderDeck() {
 
   const tile = (c, hideFuture) => {
     const got = col[c.id];
-    const hidden = !got && hideFuture && c.mode === "story" && c.day > S.position;
+    const hidden = !got;
     return h("div", {
       class: `deck-card suit-${c.difficulty}${got ? "" : " locked"}${got && got.rejected ? " shine" : ""}`,
-      title: got ? `${c.title} · done ${got.count}×${got.rejected ? " · rejected at least once" : ""}` : hidden ? "Not reached yet" : c.title,
+      title: got ? `${c.title} · done ${got.count}×${got.rejected ? " · rejected at least once" : ""}` : "Not collected yet",
     },
       h("div", { class: "deck-corner" }, h("b", {}, String(c.difficulty)), h("span", { class: "suit-mark" }, SUITS[c.difficulty].symbol)),
       h("span", { class: "deck-title" }, hidden ? "???" : c.title),
       got && got.count > 1 ? h("span", { class: "deck-count" }, `×${got.count}`) : null,
-      c.tone === "fun" ? h("span", { class: "deck-flag" }, "Fun") : c.crush && c.mode === "situation" ? h("span", { class: "deck-flag" }, "Crush") : null);
+      c.tone === "fun" ? h("span", { class: "deck-flag" }, "Fun") : c.crush && c.mode === "situation" ? h("span", { class: "deck-flag" }, "Flirt") : c.duo ? h("span", { class: "deck-flag" }, "Duo") : null);
   };
 
   mount(el("view-deck"),
