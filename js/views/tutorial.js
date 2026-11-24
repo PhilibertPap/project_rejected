@@ -1,26 +1,34 @@
-// First-run tutorial: the idea, then a spotlight tour of the UI. Skippable at any step.
+// First login: a 3-step intro (the idea, the card, points). Each other tab explains itself with a
+// one-time tip the first time you open it (hint()). Settings > "Replay intro" shows everything again.
 const TOUR = [
-  { title: "Collect no's.",
-    body: ["The goal is to hear no — so that asking for things gets easier.",
-           "Every day you get one challenge. Either you choke and don't ask anyone, or you take your courage in both hands and ask.",
-           "And if they say no, even better. What matters isn't the thing you ask for. It's that you asked."] },
-  { target: ".card", title: "Story",
-    body: ["One card a day, in order: a small real-life ask. The path is 30 days long and starts very easy."] },
-  { target: ".card", title: "Three outcomes", outcomes: true,
-    body: ["After you tried, tell the truth:"] },
-  { target: ".tiles", title: "Your numbers",
-    body: ["Rating goes up every time you ask. Streak counts the days in a row with at least one ask."] },
-  { target: ".analytics .tabs", title: "Your progress",
-    body: ["Your week, the cards you've collected by colour, a heatmap of every day, your rating curve and your stats."] },
-  { target: 'nav a[href="#play"]', title: "Side quests",
-    body: ["Optional cards for where you are. Pick Progress for real asks or Fun for absurd ones, alone or with a friend."] },
-  { target: 'nav a[href="#journal"]', title: "Journal",
-    body: ["Write how it went: before, during, after. Keep it private, or share one entry a day with your team."] },
-  { target: 'nav a[href="#team"]', title: "Team",
-    body: ["Team up with up to 7 friends: weekly ranking, shared entries, 👍 and 💪. Invite them with a link."] },
-  { target: "#profile-btn", title: "You",
-    body: ["Your Deck — every card you've done, with a gold edge when you got a no — plus settings, theme, password and this tutorial."] },
+  { title: "Project Rejected",
+    body: ["One small real-life ask a day: the time, a discount, a coffee with a stranger.",
+           "It starts very easy and gets harder over 30 days. The goal: asking stops being scary, whatever the answer."] },
+  { target: ".card", title: "Today's card",
+    body: ["Tap to reveal it. Go do it for real, then come back and say honestly how it went.",
+           "Didn't dare? Say so. The card stays until you do it."] },
+  { target: ".tiles", title: "Points and streak",
+    body: ["Asking earns points. Come back every day to keep your streak.",
+           "That's it. The other tabs explain themselves the first time you open them."] },
 ];
+
+// ---- one-time tips, shown at the top of a tab on the first visit
+const HINTS = {
+  play: { title: "Side quests", text: "Extra cards, optional. Pick where you are and a mode, then tap the card. Do as many as you want." },
+  journal: { title: "Journal", text: "A few lines on how it went: before, during, after. Private unless you tick “Share with team”." },
+  team: { title: "Team", text: "Up to 7 friends. You see each other's week and shared journal entries. Invite friends with a link." },
+};
+const hintKey = page => `hint:${state.me.id}:${page}`;
+function hint(page) {
+  const tip = HINTS[page];
+  try { if (!tip || localStorage.getItem(hintKey(page))) return null; } catch (_) { return null; }
+  const box = h("div", { class: "hint-card", role: "note" },
+    h("p", { class: "hint-title" }, tip.title),
+    h("p", {}, tip.text),
+    h("button", { class: "small secondary", onclick: () => { try { localStorage.setItem(hintKey(page), "1"); } catch (_) {} box.remove(); } }, "Got it"));
+  return box;
+}
+function resetHints() { Object.keys(HINTS).forEach(p => { try { localStorage.removeItem(hintKey(p)); } catch (_) {} }); }
 
 function startTutorial() {
   if (location.hash && location.hash !== "#today") { location.hash = "#today"; }
@@ -69,15 +77,11 @@ function startTutorial() {
       h("p", { class: "tour-step" }, `${i + 1} / ${TOUR.length}`),
       h("p", { class: "tour-title" }, step.title),
       step.body.map(t => h("p", {}, t)),
-      step.outcomes ? h("div", { class: "tour-outcomes" },
-        h("div", {}, h("span", { class: "badge badge-rejected" }, "Rejected"), h("span", {}, "Best outcome. Double points.")),
-        h("div", {}, h("span", { class: "badge badge-accepted" }, "Yes"), h("span", {}, "You asked, they agreed. Good.")),
-        h("div", {}, h("span", { class: "badge badge-choked" }, "Choked"), h("span", {}, "You didn't ask. You lose a bit, but you still have the rest of the day."))) : null,
       h("div", { class: "tour-foot" },
         h("button", { class: "secondary small", onclick: finish }, "Skip"),
         h("span", { class: "grow" }),
         i ? h("button", { class: "secondary small", onclick: () => go(-1) }, "Back") : null,
-        h("button", { class: "small", onclick: () => (last ? finish() : go(1)) }, last ? "Let's go" : i === 0 ? "Show me around" : "Next")));
+        h("button", { class: "small", onclick: () => (last ? finish() : go(1)) }, last ? "Let's go" : "Next")));
     const target = step.target && document.querySelector(step.target);
     if (target) target.scrollIntoView({ block: "center", behavior: "instant" });
     requestAnimationFrame(place);

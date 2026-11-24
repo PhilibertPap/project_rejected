@@ -64,7 +64,7 @@ async function renderSettings() {
     h("section", { class: "panel" },
       h("h3", {}, "Session"),
       h("div", { class: "row" },
-        me.is_admin ? null : h("button", { class: "secondary", onclick: () => { location.hash = "#today"; setTimeout(startTutorial, 300); } }, "Replay tutorial"),
+        me.is_admin ? null : h("button", { class: "secondary", onclick: () => { resetHints(); location.hash = "#today"; setTimeout(startTutorial, 300); } }, "Replay intro and tips"),
         h("button", { class: "secondary", onclick: logout }, "Log out"))));
 }
 

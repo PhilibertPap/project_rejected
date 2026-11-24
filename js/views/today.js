@@ -75,7 +75,6 @@ async function renderToday() {
     storyHeader(S, now),
     statusLine(now),
     main,
-    yesRate(),
     resultList(state.attempts.filter(a => a.day === now && !Game.isSit(a))),
     analyticsTabs());
 }

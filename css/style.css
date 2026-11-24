@@ -579,3 +579,8 @@ body.touring { overflow: hidden; }
 .yes-rate b { color: var(--green); }
 .card.collected .card-front { padding: calc(28% + 0.6rem) 0.9rem 2rem; }
 .card.collected .band-mark { font-size: 4.5rem; bottom: -1rem; }
+
+/* one-time tips */
+.hint-card { background: var(--accent-soft); border: 1px solid var(--accent-line); border-radius: var(--r-lg); padding: 0.85rem 1rem; margin: 0 0 1rem; }
+.hint-card p { margin: 0 0 0.6rem; font-size: 0.93rem; }
+.hint-title { font-weight: 700; color: var(--accent); margin-bottom: 0.25rem !important; }

@@ -28,8 +28,8 @@ function playChips() {
       toggle("crush", "Flirt", "Cards about someone you find attractive")));
 }
 
-async function drawPlayCard() {
-  const card = Game.drawSituation(state.cards, state.attempts, state.R, state.data, playOpts);
+async function drawPlayCard(exclude = null) {
+  const card = Game.drawSituation(state.cards, state.attempts, state.R, state.data, { ...playOpts, exclude });
   if (!card) { alert("No card for these settings yet. Try another place."); return null; }
   await createAttempt(card, "situation", playOpts.duo);
   return card;
@@ -52,7 +52,7 @@ async function renderPlay() {
           onclick: async () => {
             rerollUsed = true;
             await deleteAttempt(pending);
-            await drawPlayCard();
+            await drawPlayCard(pending.challenge_id);
             renderPlay();
           },
         }, "Reroll (once)")
@@ -67,8 +67,8 @@ async function renderPlay() {
 
   mount(el("view-play"),
     pageHead("Side quests", "Optional cards for wherever you are."),
+    hint("play"),
     main,
-    yesRate(),
     h("p", { class: "muted small center" }, note),
     resultList(todays));
 }

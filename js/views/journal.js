@@ -34,6 +34,7 @@ async function renderJournal() {
 
   mount(el("view-journal"),
     pageHead("Journal"),
+    hint("journal"),
     h("section", { class: "composer" },
       h("div", { class: "composer-head" },
         h("span", { class: "eyebrow" }, `Today · ${fmtDay(today, { weekday: "long", day: "numeric", month: "long" })}`)),

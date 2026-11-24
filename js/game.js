@@ -204,7 +204,8 @@ const Game = (() => {
   }
 
   function drawSituation(cards, attempts, R, cfg, opts, now = today()) {
-    const pool = situationPool(cards, cfg, opts);
+    const all = situationPool(cards, cfg, opts);
+    const pool = all.filter(x => x.id !== opts.exclude).length ? all.filter(x => x.id !== opts.exclude) : all;  // reroll: not the same card
     if (!pool.length) return null;
     const st = clone(R.st);
     idle(st, now, cfg.skill);
@@ -215,15 +216,17 @@ const Game = (() => {
     const backlog = pool.filter(x => chokedIds.has(x.id) && !doneIds.has(x.id) && !todayIds.has(x.id) && Math.abs(x.difficulty - c) <= 1);
     if (backlog.length && Math.random() < cfg.draw.backlog_chance) return pick(backlog);
 
+    // Fresh = not drawn today and not among the last N cards. Pick the level among fresh cards,
+    // so a level with a single card can't come back again and again.
     const S = cfg.skill;
-    const levels = [...new Set(pool.map(x => x.difficulty))].sort();
+    const recent = new Set([...attempts].sort(byTime).slice(-cfg.draw.avoid_recent).map(a => a.challenge_id));
+    const notToday = pool.filter(x => !todayIds.has(x.id));
+    const fresh = notToday.filter(x => !recent.has(x.id));
+    const from = fresh.length ? fresh : notToday.length ? notToday : pool;
+    const levels = [...new Set(from.map(x => x.difficulty))].sort();
     const weights = levels.map(d => Math.exp(-(((expected(st, d, S) - S.target_p) / S.target_width) ** 2)) + S.explore);
     const d = levels[weightedIndex(weights)];
-    const recent = new Set([...attempts].sort(byTime).slice(-cfg.draw.avoid_recent).map(a => a.challenge_id));
-    todayIds.forEach(id => recent.add(id));
-    const sameLevel = pool.filter(x => x.difficulty === d);
-    const fresh = sameLevel.filter(x => !recent.has(x.id));
-    return pick(fresh.length ? fresh : sameLevel);
+    return pick(from.filter(x => x.difficulty === d));
   }
 
   // ---- collection
