@@ -1,40 +1,38 @@
 // App shell: auth, data loading, routing by role
-const state = { me: null, data: null, attempts: [], cards: [] };
+const state = { me: null, data: null, attempts: [], cards: [] };  // data = config.json, cards = card catalogue (DB)
 const SCREENS = ["auth", "pending", "app"];
 const RENDER = {
-  today: () => renderToday(), cards: () => renderCards(), journal: () => renderJournal(),
-  feed: () => renderFeed(), settings: () => renderSettings(), admin: () => renderAdmin(),
+  today: () => renderToday(), play: () => renderPlay(), deck: () => renderDeck(), journal: () => renderJournal(),
+  feed: () => renderFeed(), settings: () => renderSettings(), admin: () => renderAdmin(), catalog: () => renderCatalog(),
 };
-const PLAYER_TABS = ["today", "cards", "journal", "feed", "settings"];
-const ADMIN_TABS = ["admin", "feed", "settings"];
+const PLAYER_TABS = ["today", "play", "deck", "journal", "feed", "settings"];
+const ADMIN_TABS = ["admin", "catalog", "feed", "settings"];
 
 const showScreen = id => SCREENS.forEach(s => (el(s).hidden = s !== id));
 
 async function loadData() {
-  state.data = await fetch("data/challenges.json", { cache: "no-store" }).then(r => r.json());
-  if (state.me.is_admin) return;
-  [state.attempts, state.cards] = await Promise.all([
-    q(sb.from("attempts").select("*").eq("user_id", state.me.id).order("created_at")),
-    q(sb.from("custom_cards").select("*").eq("user_id", state.me.id).order("created_at")),
+  [state.data, state.cards] = await Promise.all([
+    fetch("data/config.json", { cache: "no-store" }).then(r => r.json()),
+    q(sb.from("cards").select("*").order("id")),
   ]);
+  if (state.me.is_admin) return;
+  state.attempts = await q(sb.from("attempts").select("*").eq("user_id", state.me.id).order("created_at"));
   refreshRating();
 }
+
+const streak = (attempts = state.attempts) => Game.streakInfo(attempts, state.cards, state.data);
 
 // Compact line on the other tabs (Today has the stat tiles)
 function renderStats(tab) {
   el("stats").hidden = state.me.is_admin || tab === "today";
   if (state.me.is_admin) return;
-  el("stats").textContent = `Rating ${fmtNum(state.R.st.rating)} · Streak ${Game.streak(state.attempts)}`;
+  el("stats").textContent = `Rating ${fmtNum(state.R.st.rating)} · Streak ${streak().current}`;
 }
 
-// Card content for an attempt (JSON pack or the user's own cards)
+// Card content for an attempt (catalogue, falling back to what the attempt stored)
 function cardFor(attempt) {
-  if (attempt.challenge_id && attempt.challenge_id.startsWith("custom-")) {
-    const c = state.cards.find(c => `custom-${c.id}` === attempt.challenge_id);
-    return { title: attempt.title, text: c ? c.body : "", difficulty: attempt.difficulty, custom: true };
-  }
-  const c = [...state.data.scripted, ...state.data.pool].find(c => c.id === attempt.challenge_id);
-  return c || { title: attempt.title, text: "", difficulty: attempt.difficulty };
+  const c = state.cards.find(c => c.id === attempt.challenge_id);
+  return c || { title: attempt.title, body: "", difficulty: attempt.difficulty };
 }
 
 function route() {

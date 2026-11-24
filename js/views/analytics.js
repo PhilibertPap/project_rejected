@@ -6,7 +6,7 @@ const VIZ = {
   line: "#f2f2f0", grid: "#2a2a2e", surface: "#0e0e0f",
 };
 const STATE_LABEL = { choked: "Choked", accepted: "Yes", rejected: "Rejected" };
-const ANALYTICS_TABS = ["Week", "Deck", "Heatmap", "Rating", "Stats"];
+const ANALYTICS_TABS = ["Week", "Heatmap", "Rating", "Stats"];
 const fmtNum = n => n.toLocaleString("en-GB");
 
 function refreshRating() { state.R = Game.replay(state.attempts, state.data); }
@@ -81,7 +81,7 @@ function statTiles() {
 
   return h("div", { class: "tiles" },
     tile("Rating", fmtNum(state.R.st.rating), todays.length ? `${fmtPts(todayDelta)} today` : "—", deltaCls),
-    tile("Streak", `${Game.streak(state.attempts)}`, `best ${Game.bestStreak(state.attempts)}`),
+    tile("Streak", `${streak().current}`, `best ${streak().best}${streak().freezes ? ` · ❄ ${streak().freezes}` : ""}`),
     tile("This week", `${weekCount}/7`, "days validated"));
 }
 
@@ -98,7 +98,7 @@ function analyticsTabs() {
     bar.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.textContent === name));
     tip.hide();
     const states = dayStates();
-    mount(panel, { Week: () => weekView(states), Deck: deckView, Heatmap: () => heatmapView(states), Rating: ratingView, Stats: statsView }[name]());
+    mount(panel, { Week: () => weekView(states), Heatmap: () => heatmapView(states), Rating: ratingView, Stats: statsView }[name]());
   };
   ANALYTICS_TABS.forEach(n => bar.append(h("button", { class: "tab", role: "tab", onclick: () => select(n) }, n)));
   const wrap = h("section", { class: "analytics" }, bar, panel);
@@ -119,7 +119,8 @@ function weekView(states) {
   const weekAttempts = state.attempts.filter(a => a.result && a.day >= days[0]);
   const gained = state.R.st.rating - ratingAt(Game.addDays(days[0], -1));
   const rejections = weekAttempts.filter(a => a.result === "rejected").length;
-  const validated = days.filter(d => states[d] && states[d].state !== "choked").length;
+  const vd = Game.validatedDays(state.attempts);
+  const validated = days.filter(d => vd.has(d)).length;
 
   return [
     h("div", { class: "week" }, days.map(d => {
@@ -250,22 +251,8 @@ function statsView() {
     ["Avg difficulty, last 14 days", avgDiff],
     ["Median time from draw to done", median == null ? "—" : fmtMin(median)],
     ["Days validated", Game.validatedDays(state.attempts).size],
-    ["Best streak", Game.bestStreak(state.attempts)],
+    ["Best streak", streak().best],
   ];
   return h("ul", { class: "list compact" }, rows.map(([k, v]) => h("li", {}, h("span", {}, k), h("strong", { class: "num" }, String(v)))));
 }
 
-// ---- Deck: cards collected per suit (custom cards excluded: their difficulty is self-rated)
-function deckView() {
-  const done = state.attempts.filter(a => Game.isDone(a) && !(a.challenge_id || "").startsWith("custom-"));
-  return [
-    h("div", { class: "deck" }, [1, 2, 3, 4, 5].map(d => {
-      const n = done.filter(a => a.difficulty === d).length;
-      return h("div", { class: `deck-suit suit-${d}${n ? "" : " empty"}` },
-        h("span", { class: "suit-mark" }, SUITS[d].symbol),
-        h("b", { class: "num" }, String(n)),
-        h("small", {}, SUITS[d].name));
-    })),
-    h("p", { class: "muted small center" }, `${done.length} card${done.length === 1 ? "" : "s"} collected · your own cards don't count`),
-  ];
-}

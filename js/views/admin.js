@@ -6,7 +6,7 @@ async function renderAdmin() {
   const [users, stats, attempts, cards] = await Promise.all([
     q(sb.rpc("admin_users")),
     q(sb.rpc("admin_user_stats")),
-    q(sb.from("attempts").select("id, user_id, day, title, challenge_id, difficulty, result, created_at, resolved_at").order("created_at")),
+    q(sb.from("attempts").select("id, user_id, day, title, challenge_id, difficulty, result, mode, duo, created_at, resolved_at").order("created_at")),
     q(sb.from("custom_cards").select("user_id, title, difficulty")),
   ]);
   const now = Game.today();
@@ -90,7 +90,7 @@ function userRow(u, mine, st, cards, lastActive) {
     h("span", { class: "avatar-wrap" }, avatar(u.username), today ? h("span", { class: "online", title: "Active today" }) : null),
     h("span", { class: "grow left" }, h("strong", {}, u.username), h("span", { class: "muted small block" }, `active ${ago(lastActive)}`)),
     h("span", { class: "row-stat" }, h("b", {}, fmtNum(R.st.rating)), h("small", {}, "rating")),
-    h("span", { class: "row-stat" }, h("b", {}, String(Game.streak(mine))), h("small", {}, "streak")),
+    h("span", { class: "row-stat" }, h("b", {}, String(streak(mine).current)), h("small", {}, "streak")),
     h("span", { class: "chevron", "aria-hidden": "true" }, "›"));
   return h("div", { class: "user" }, row, details);
 }
@@ -121,7 +121,7 @@ function userDetails(u, mine, st, cards, R) {
       ])),
       h("section", {}, h("h4", {}, "Game"), kv([
         ["Rating", fmtNum(R.st.rating)],
-        ["Streak · best", `${Game.streak(mine)} · ${Game.bestStreak(mine)}`],
+        ["Streak · best · freezes", `${streak(mine).current} · ${streak(mine).best} · ${streak(mine).freezes}`],
         ["Days validated", Game.validatedDays(mine).size],
         ["Cards played", res.length],
         ["Rejected · Yes · Choked", `${c("rejected")} · ${c("accepted")} · ${c("choked")}`],
@@ -153,6 +153,7 @@ function userDetails(u, mine, st, cards, R) {
           h("span", { class: `badge badge-${a.result}` }, RESULT_LABEL[a.result]))))
       : h("p", { class: "muted small" }, "No card played yet."),
     cards.length ? [h("h4", {}, "Own cards"), h("p", { class: "muted small" }, cards.map(c2 => `${SUITS[c2.difficulty].symbol} ${c2.title}`).join(" · "))] : null,
+    storyTool(u, mine),
     h("div", { class: "danger-zone" },
       adminAction("Delete user", "danger", async () => {
         const typed = prompt(`Delete "${u.username}" and ALL their data (cards, journal, replies, reactions)? Type the username to confirm.`);
@@ -246,4 +247,37 @@ function resultsBar(attempts) {
     })),
     h("div", { class: "legend" }, parts.map(p => h("span", {}, h("i", { class: "swatch", style: `background:${VIZ[p.k]}` }), `${p.label} ${p.n}`))),
   ];
+}
+
+// Story progress: set this player's result on each story card (date + result), e.g. to migrate progress
+function storyTool(u, mine) {
+  const story = state.cards.filter(c => c.mode === "story").sort((a, b) => a.day - b.day);
+  const best = id => {
+    const list = mine.filter(a => a.challenge_id === id && a.result);
+    return list.find(a => a.result === "rejected") || list.find(a => a.result === "accepted") || list[0] || null;
+  };
+  const S = Game.storyState(state.cards, mine);
+  const rows = story.map(c => {
+    const cur = best(c.id);
+    const sel = h("select", {}, [["", "—"], ["rejected", "Rejected"], ["accepted", "Yes"], ["choked", "Choked"]]
+      .map(([k, v]) => h("option", { value: k, selected: (cur?.result || "") === k }, v)));
+    const date = h("input", { type: "date", value: cur?.day || Game.today() });
+    const status = h("span", { class: "muted small" });
+    const save = h("button", {
+      class: "small secondary", type: "button",
+      onclick: async () => {
+        save.disabled = true;
+        try {
+          await q(sb.rpc("admin_set_story", { target: u.id, card: c.id, res: sel.value || null, d: date.value }));
+          status.textContent = "saved";
+        } catch (err) { status.textContent = errorText(err); }
+        save.disabled = false;
+      },
+    }, "Save");
+    return h("div", { class: "story-row" }, h("span", { class: "story-day" }, String(c.day)), h("span", { class: "grow left small" }, c.title), sel, date, save, status);
+  });
+  return h("details", { class: "story-tool" },
+    h("summary", {}, `Story progress · day ${Math.min(S.position, S.total)} / ${S.total}`),
+    h("p", { class: "muted small" }, "Set a result and a date per card, then Save. Clearing a result (—) removes it. Reload the page to see totals update."),
+    rows);
 }

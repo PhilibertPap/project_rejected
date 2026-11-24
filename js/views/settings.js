@@ -50,8 +50,9 @@ function statsTable() {
   const resolved = a.filter(x => x.result);
   const rows = [
     ["Rating", fmtNum(state.R.st.rating)],
-    ["Current streak", Game.streak(a)],
-    ["Best streak", Game.bestStreak(a)],
+    ["Current streak", streak().current],
+    ["Best streak", streak().best],
+    ["Streak freezes", streak().freezes],
     ["Days validated", Game.validatedDays(a).size],
     ["Rejections", resolved.filter(x => x.result === "rejected").length],
     ["Yes", resolved.filter(x => x.result === "accepted").length],

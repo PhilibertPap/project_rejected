@@ -3,21 +3,25 @@
 Daily rejection therapy challenges. https://philibertpap.github.io/project_rejected/
 
 ## Rules
-- Each day: draw a face-down card, flip it, go do it. Rejected / They said yes / Choked.
-- Day validated by one Rejected or Yes. Streak = consecutive validated days. A choke only costs rating; the card goes back in the deck.
-- First 5 days: scripted cards. Then cards are picked by the hidden skill (see below).
-- After the daily card (optional): another random card, or one of your own cards (My cards).
-- Journal: unlimited private entries, max one public entry per day (feed, 👍/💪 reactions, replies).
-- Admin account: admin interface only (overview charts, approve/refuse, expandable player profiles; private journal entries are only counted, never shown).
-- First login: skippable tutorial (concept + spotlight tour), replayable from Settings.
+- **Story tab**: one scripted card a day, 30 days (Season 1), then a new card a day (Season 2). Sunday = the week's Sunday variant. "Not today" swaps with the next card of the week (checkpoint stays last).
+- **Extra tab (situation cards)**: optional cards; one Draw button, optional chips (place, with a friend, Fun, Crush from day 15). One reroll per draw.
+- **Deck**: every card done (Rejected or Yes) is collected; a no gives it a white edge.
+- Day validated = story card done, or 2 situation cards done. Streak freezes (max 2) are earned on story checkpoints and every 10 situation cards, spent automatically on a missed day.
+- Journal, Feed, Admin as before. Game design doc: Claude Doc "Project Rejected — Game design & cartes".
 
-## Rating (public) — `scoring` in challenges.json
+## Cards
+- Cards live in Supabase (table `cards`). Edit them in the admin **Cards** tab (search, edit, add, untick Active to hide, delete).
+- `tools/cards.py` holds the original catalogue and generates `supabase/cards_seed.sql` (initial seed, run once — re-running overwrites admin edits on the same ids).
+- Ids: `d1`…`d30` story, `sun1`… Sunday variants, `s-<place>-<slug>` situation.
+- Scoring / skill settings: `data/config.json`.
+
+## Rating (public) — `scoring` in data/config.json
 - Starts at 0, never below 0. Base = 100 + 15 × (difficulty − 1).
 - Yes = base, Rejected = 2 × base. × 0.75–1.25 depending on how hard the card was *for you* (Elo-style).
 - Daily card: + 2 % per streak day (max + 30 %). Extra cards the same day: × 0.5, 0.25, 0.1.
 - Choked: about −20 to −60 (more if the card was easy for you, halved on extra cards).
 
-## Skill (hidden) — `skill` in challenges.json
+## Skill (hidden) — `skill` in data/config.json
 - Glicko-like: skill θ + uncertainty u. Each card has a rating; P(go) = logistic(θ − card), flattened by u.
 - u is high at the start (big moves), shrinks with play, grows when idle or after a surprise (choking an easy card late).
 - Done within 30 min of the draw = stronger evidence.
@@ -31,6 +35,7 @@ Daily rejection therapy challenges. https://philibertpap.github.io/project_rejec
 - Supabase (auth, Postgres + RLS). SQL in `supabase/`, run in order.
 
 ## Files
-- `data/challenges.json` — card pack, level & draw settings
-- `js/game.js` — points, streak, level, draw (no DOM)
-- `js/app.js` — auth, tabs · `js/views/*` — one file per tab
+- `data/config.json` — scoring, hidden skill, draw and streak settings
+- `js/game.js` — story progression, points, streak, skill, situation draw, collection (no DOM)
+- `js/app.js` — auth, data loading, tabs · `js/views/*` — one file per tab (`cardui.js` = shared card UI)
+- `tools/cards.py` — card catalogue → seed SQL

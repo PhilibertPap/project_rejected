@@ -1,0 +1,62 @@
+{
+  "_doc": "Scoring and hidden-skill settings. Cards live in the database (table cards, seed in supabase/cards_seed.sql).",
+  "scoring": {
+    "base": 100,
+    "per_level": 15,
+    "rejected_mult": 2,
+    "accepted_mult": 1,
+    "challenge_min": 0.75,
+    "challenge_max": 1.25,
+    "extra_cards": [
+      0.5,
+      0.25,
+      0.1
+    ],
+    "streak_bonus_per_day": 0.02,
+    "streak_bonus_max": 0.3,
+    "choke_mult": 0.35,
+    "choke_extra_mult": 0.5,
+    "situation_mult": 0.4,
+    "situation_daily": [
+      1,
+      0.5,
+      0.25,
+      0
+    ],
+    "situation_choke_mult": 0.5
+  },
+  "skill": {
+    "start": 0,
+    "card_rating_step": 180,
+    "card_rating_offset": -480,
+    "u_start": 350,
+    "u_min": 100,
+    "u_decay": 0.92,
+    "u_idle_per_day": 25,
+    "surprise": 0.7,
+    "surprise_boost": 1.3,
+    "k": 140,
+    "fast_minutes": 30,
+    "fast_weight": 1.25,
+    "target_p": 0.78,
+    "target_width": 0.15,
+    "explore": 0.03,
+    "situation_weight": 0.5,
+    "duo_weight": 0.25
+  },
+  "draw": {
+    "avoid_recent": 15,
+    "backlog_chance": 0.35
+  },
+  "streak": {
+    "freeze_max": 2,
+    "freeze_per_situation": 10
+  },
+  "anywhere": [
+    "street",
+    "shop",
+    "cafe",
+    "transport",
+    "home"
+  ]
+}
