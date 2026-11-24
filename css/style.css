@@ -419,3 +419,30 @@ button.danger:hover { background: var(--error); color: var(--bg); }
 .profile-pop a, .profile-pop button { display: block; width: 100%; text-align: left; padding: 0.6rem 0.75rem; border: none; border-radius: 6px; background: transparent; color: var(--fg); font: inherit; font-size: 0.95rem; font-weight: 500; text-decoration: none; cursor: pointer; }
 .profile-pop a:hover, .profile-pop button:hover, .profile-pop a.active { background: var(--surface-2); }
 .profile-pop button.js-logout { color: var(--muted); }
+
+/* v9: team */
+.team-head { text-align: center; margin: 0.5rem 0 1rem; }
+.team-name { font-family: var(--display); font-weight: 700; font-size: 1.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin: 0; line-height: 1.1; }
+.team-head p { margin: 0.35rem 0 0; }
+.invite { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; margin-bottom: 1rem; }
+.invite-btn { min-width: 12rem; }
+.team-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0; border-top: 1px solid var(--line); }
+.team-row:first-of-type { border-top: none; }
+.team-row .grow, .rank-row .grow { flex: 1; min-width: 0; }
+.panel .row input { flex: 1; min-width: 0; }
+.ranking { margin: 1.25rem 0 1.75rem; }
+.rank-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 0.75rem; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 0.4rem; background: var(--surface); }
+.rank-row.me { border-color: var(--fg); }
+.rank-pos { width: 1.2rem; text-align: center; font-family: var(--display); font-weight: 700; font-size: 1.2rem; color: var(--muted); }
+.rank-row:first-child .rank-pos { color: var(--fg); }
+.rank-sub { display: block; }
+.rank-pts { font-family: var(--display); font-weight: 700; font-size: 1.3rem; }
+.rank-pts.neg { color: var(--muted); }
+.team-settings { margin: 2rem 0 1rem; border-top: 1px solid var(--line); padding-top: 0.75rem; }
+.team-settings summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; margin-bottom: 0.75rem; }
+.team-settings > .row, .team-settings > .switch, .team-settings > .small-actions { margin-bottom: 0.75rem; }
+.team-settings > button.danger { margin-top: 1rem; }
+.invite-banner { width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 0.7rem 0.9rem; margin: 0 0 1rem; font-size: 0.95rem; }
+.invite-banner[hidden], .js-invite[hidden] { display: none; }
+.team-admin-row { padding: 0.45rem 0; border-top: 1px solid var(--line); }
+.team-admin-row .tag { margin-left: 0.4rem; }

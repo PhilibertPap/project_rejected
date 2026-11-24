@@ -15,9 +15,9 @@ const TOUR = [
   { target: 'nav a[href="#play"]', title: "Side quests",
     body: ["Optional. Draw extra cards for where you are — class, café, park — alone or with a friend, serious or fun."] },
   { target: 'nav a[href="#journal"]', title: "Journal",
-    body: ["Write how it went: before, during, after. Keep it private, or publish one entry a day to the feed."] },
-  { target: 'nav a[href="#feed"]', title: "Feed",
-    body: ["See how the others are doing. React with 👍 or 💪, and reply."] },
+    body: ["Write how it went: before, during, after. Keep it private, or share one entry a day with your team."] },
+  { target: 'nav a[href="#team"]', title: "Team",
+    body: ["Team up with up to 7 friends: weekly ranking, shared entries, 👍 and 💪. Invite them with a link."] },
   { target: "#profile-btn", title: "You",
     body: ["Your Deck — every card you've done, with a white edge when you got a no — plus settings, password and this tutorial."] },
 ];

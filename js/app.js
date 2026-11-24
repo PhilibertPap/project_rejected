@@ -3,9 +3,9 @@ const state = { me: null, data: null, attempts: [], cards: [] };  // data = conf
 const SCREENS = ["auth", "pending", "app"];
 const RENDER = {
   today: () => renderToday(), play: () => renderPlay(), deck: () => renderDeck(), journal: () => renderJournal(),
-  feed: () => renderFeed(), settings: () => renderSettings(), admin: () => renderAdmin(), catalog: () => renderCatalog(),
+  team: () => renderTeam(), feed: () => renderFeed(), settings: () => renderSettings(), admin: () => renderAdmin(), catalog: () => renderCatalog(),
 };
-const PLAYER_TABS = ["today", "play", "deck", "journal", "feed", "settings"];
+const PLAYER_TABS = ["today", "play", "deck", "journal", "team", "settings"];
 const ADMIN_TABS = ["admin", "catalog", "feed", "settings"];
 
 const showScreen = id => SCREENS.forEach(s => (el(s).hidden = s !== id));
@@ -54,9 +54,9 @@ async function render() {
   el("profile-menu").hidden = true;
   try {
     state.me = await getProfile();
-    if (!state.me) return showScreen("auth");
+    if (!state.me) { showInviteBanner(); return showScreen("auth"); }
     document.querySelectorAll(".js-username").forEach(e => (e.textContent = state.me.username));
-    if (!state.me.approved) return showScreen("pending");
+    if (!state.me.approved) { showInviteBanner(); return showScreen("pending"); }
     await loadData();
     el("player-nav").hidden = state.me.is_admin;
     el("admin-nav").hidden = !state.me.is_admin;
@@ -66,6 +66,7 @@ async function render() {
     showScreen("app");
     route();
     sb.rpc("touch").then(() => {}, () => {});
+    await acceptInvite();
     if (!state.me.is_admin && !state.me.onboarded) setTimeout(startTutorial, 400);
   } catch (err) {
     showScreen("auth");
@@ -106,7 +107,11 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeProfile
 el("profile-pop").addEventListener("click", e => { if (e.target.closest("a")) closeProfile(); });
 
 document.querySelectorAll(".js-logout").forEach(btn => btn.addEventListener("click", logout));
-window.addEventListener("hashchange", () => { if (!el("app").hidden) route(); });
+window.addEventListener("hashchange", () => {
+  if (/^#join=/.test(location.hash)) { captureInvite(); if (!el("app").hidden) acceptInvite(); else showInviteBanner(); }
+  if (!el("app").hidden) route();
+});
+captureInvite();
 render();
 
 el("brand").prepend(logoMark());

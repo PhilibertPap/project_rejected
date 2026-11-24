@@ -1,22 +1,44 @@
-// Feed: public journal entries as posts, with reactions and collapsible replies
+// Shared journal entries as posts, with reactions and collapsible replies.
+// Players see their team's entries (RLS), the admin sees every shared entry.
 const REACTIONS = [{ kind: "thumbs", emoji: "👍" }, { kind: "strong", emoji: "💪" }];
 const openThreads = new Set();
 
-async function renderFeed() {
+const rerender = () => route();
+
+async function feedPosts(emptyText) {
   const entries = await q(sb.from("recaps")
     .select("id, day, body, user_id, created_at, author:profiles!recaps_user_id_fkey(username), reactions(kind, user_id), replies(id, body, created_at, author:profiles!replies_user_id_fkey(username))")
     .eq("is_public", true)
     .order("day", { ascending: false }).order("created_at", { ascending: false }).limit(50));
 
-  if (!entries.length) return mount(el("view-feed"), h("p", { class: "muted center empty-state" }, "Nothing here yet. Publish a journal entry to start the feed."));
+  if (!entries.length) return h("p", { class: "muted center empty-state" }, emptyText);
 
   const userIds = [...new Set(entries.map(e => e.user_id))];
   const days = [...new Set(entries.map(e => e.day))];
   const attempts = await q(sb.from("attempts").select("user_id, day, title, difficulty, result, created_at")
     .in("user_id", userIds).in("day", days).not("result", "is", null));
 
-  mount(el("view-feed"), h("div", { class: "feed" },
-    entries.map(e => post(e, attempts.filter(a => a.user_id === e.user_id && a.day === e.day)))));
+  return h("div", { class: "feed" },
+    entries.map(e => post(e, attempts.filter(a => a.user_id === e.user_id && a.day === e.day))));
+}
+
+// Admin: every team, then every shared entry (moderation)
+async function renderFeed() {
+  const [teams, members] = await Promise.all([
+    q(sb.from("teams").select("id, name, is_public, created_at").order("created_at", { ascending: false })),
+    q(sb.from("team_members").select("team_id, profile:profiles(username)")),
+  ]);
+  mount(el("view-feed"),
+    h("section", { class: "settings-block" },
+      h("h3", {}, `Teams · ${teams.length}`),
+      teams.length ? teams.map(t => {
+        const names = members.filter(m => m.team_id === t.id).map(m => m.profile.username);
+        return h("div", { class: "team-admin-row" },
+          h("strong", {}, t.name), tag(t.is_public),
+          h("span", { class: "muted small" }, ` ${names.length}/${TEAM_MAX}${names.length ? " · " + names.join(", ") : ""}`));
+      }) : h("p", { class: "muted" }, "No team yet.")),
+    h("h3", {}, "Shared entries"),
+    await feedPosts("No shared entry yet."));
 }
 
 function reactionPills(e) {
@@ -29,7 +51,7 @@ function reactionPills(e) {
         ev.currentTarget.disabled = true;
         if (mine) await q(sb.from("reactions").delete().match({ recap_id: e.id, user_id: state.me.id, kind: r.kind }));
         else await q(sb.from("reactions").insert({ recap_id: e.id, kind: r.kind }));
-        renderFeed();
+        rerender();
       },
     }, r.emoji, list.length ? h("span", { class: "num" }, String(list.length)) : null);
   });
@@ -42,7 +64,7 @@ function deleteBtn(label, what, fn) {
     onclick: async ev => {
       ev.stopPropagation();
       if (!confirm(`Delete this ${what}? This can't be undone.`)) return;
-      try { await fn(); renderFeed(); } catch (err) { alert(errorText(err)); }
+      try { await fn(); rerender(); } catch (err) { alert(errorText(err)); }
     },
   }, "×");
 }
@@ -69,7 +91,7 @@ function post(e, dayAttempts) {
         if (!input.value.trim()) return;
         await q(sb.from("replies").insert({ recap_id: e.id, body: input.value.trim() }));
         openThreads.add(e.id);
-        renderFeed();
+        rerender();
       },
     }, input, h("button", { class: "small" }, "Send")));
 

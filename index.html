@@ -29,6 +29,7 @@
       <div class="hero-mark" id="hero-mark"></div>
       <p class="hero-title">Collect no's.</p>
       <p class="hero-sub">One small ask a day. The no is the point.</p>
+      <p class="invite-banner js-invite" data-when="signup" hidden></p>
       <form id="auth-form" class="panel">
         <label>Username
           <input name="username" required pattern="[A-Za-z0-9_]{3,20}"
@@ -49,6 +50,7 @@
       <div class="panel center">
         <p>Account <strong class="js-username"></strong> created.</p>
         <p class="muted">Waiting for admin approval. Come back a bit later.</p>
+        <p class="invite-banner js-invite" data-when="pending" hidden></p>
         <button class="js-logout secondary">Log out</button>
       </div>
     </section>
@@ -58,12 +60,12 @@
         <a href="#today">Story</a>
         <a href="#play">Side quests</a>
         <a href="#journal">Journal</a>
-        <a href="#feed">Feed</a>
+        <a href="#team">Team</a>
       </nav>
       <nav id="admin-nav">
         <a href="#admin">Users</a>
         <a href="#catalog">Cards</a>
-        <a href="#feed">Feed</a>
+        <a href="#feed">Teams</a>
       </nav>
       <p id="stats" class="stats"></p>
 
@@ -72,6 +74,7 @@
       <div id="view-deck" hidden></div>
       <div id="view-catalog" hidden></div>
       <div id="view-journal" hidden></div>
+      <div id="view-team" hidden></div>
       <div id="view-feed" hidden></div>
       <div id="view-settings" hidden></div>
       <div id="view-admin" hidden></div>
@@ -92,6 +95,7 @@
   <script src="js/views/catalog.js"></script>
   <script src="js/views/journal.js"></script>
   <script src="js/views/feed.js"></script>
+  <script src="js/views/team.js"></script>
   <script src="js/views/settings.js"></script>
   <script src="js/views/admin.js"></script>
   <script src="js/views/tutorial.js"></script>

@@ -32,7 +32,7 @@ async function renderSettings() {
 
     me.is_admin ? null : h("section", { class: "panel" },
       h("h3", {}, "Privacy"),
-      h("label", { class: "switch" }, visibility, h("span", { class: "slider" }), h("span", {}, "Journal entries public by default"))),
+      h("label", { class: "switch" }, visibility, h("span", { class: "slider" }), h("span", {}, "Share journal entries with my team by default"))),
 
     me.is_admin ? null : h("section", { class: "panel" }, h("h3", {}, "Stats"), statsTable()),
 

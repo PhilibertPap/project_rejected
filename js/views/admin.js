@@ -116,7 +116,7 @@ function userDetails(u, mine, st, cards, R) {
         ["Signed up", fmtDate(u.created_at)],
         ["Last login", fmtDate(u.last_sign_in_at)],
         ["Last seen", fmtDate(u.last_seen_at)],
-        ["Entries public by default", u.is_public ? "yes" : "no"],
+        ["Entries shared by default", u.is_public ? "yes" : "no"],
         ["Tutorial done", u.onboarded ? "yes" : "no"],
       ])),
       h("section", {}, h("h4", {}, "Game"), kv([
@@ -136,7 +136,7 @@ function userDetails(u, mine, st, cards, R) {
         ["u (uncertainty)", Math.round(R.st.u)],
       ])),
       h("section", {}, h("h4", {}, "Journal & social"), kv([
-        ["Entries public · private", `${st.entries_public ?? 0} · ${st.entries_private ?? 0}`],
+        ["Entries shared · private", `${st.entries_public ?? 0} · ${st.entries_private ?? 0}`],
         ["Last entry", st.last_entry_at ? fmtAgo(st.last_entry_at) : "—"],
         ["Reactions given · received", `${st.reactions_given ?? 0} · ${st.reactions_received ?? 0}`],
         ["Replies given · received", `${st.replies_given ?? 0} · ${st.replies_received ?? 0}`],

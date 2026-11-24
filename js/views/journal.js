@@ -9,8 +9,8 @@ async function renderJournal() {
   const publish = h("input", { type: "checkbox", checked: state.me.is_public && !publishedToday, disabled: publishedToday });
   const hint = h("p", { class: "hint" });
   const updateHint = () => {
-    hint.textContent = publishedToday ? "You already published today. New entries stay private."
-      : publish.checked ? "Visible to everyone in the feed. One public entry per day."
+    hint.textContent = publishedToday ? "You already shared an entry today. New entries stay private."
+      : publish.checked ? "Your team will see it. One shared entry per day."
       : "Only you will see this entry.";
     hint.classList.toggle("hint-public", publish.checked && !publishedToday);
   };
@@ -22,7 +22,7 @@ async function renderJournal() {
       const body = text.value.trim();
       if (!body) return text.focus();
       const isPublic = publish.checked && !publishedToday;
-      if (isPublic && !confirm("Publish this entry? Everyone will see it, and it's your only public entry today.")) return;
+      if (isPublic && !confirm("Share this entry with your team? It's your only shared entry today.")) return;
       save.disabled = true;
       try {
         await q(sb.from("recaps").insert({ day: today, body, is_public: isPublic }));
@@ -39,13 +39,13 @@ async function renderJournal() {
       dailySummary(state.attempts.filter(a => a.day === today)),
       text,
       h("div", { class: "composer-foot" },
-        h("label", { class: "switch" }, publish, h("span", { class: "slider" }), h("span", {}, "Publish today")),
+        h("label", { class: "switch" }, publish, h("span", { class: "slider" }), h("span", {}, "Share with team")),
         save),
       hint),
     timeline(entries));
 }
 
-const isPublicLabel = publish => (publish.checked && !publish.disabled ? "Publish" : "Save");
+const isPublicLabel = publish => (publish.checked && !publish.disabled ? "Share" : "Save");
 
 // All entries grouped by day, newest first
 function timeline(entries) {
