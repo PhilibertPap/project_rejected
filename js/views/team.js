@@ -25,7 +25,7 @@ async function renderTeam() {
     h("div", { class: "team-head" },
       h("h2", { class: "team-name" }, team.name),
       h("p", { class: "muted" }, tag(team.is_public), ` ${members.length} of ${TEAM_MAX} players`)),
-    hint("team"),
+    firstVisitTip("team"),
     members.length < TEAM_MAX ? inviteButton() : null,
     requests.length ? requestList(requests, members.length) : null,
     ranking(members, attempts),
@@ -48,7 +48,7 @@ async function renderNoTeam() {
 
   mount(el("view-team"),
     pageHead("Team", `Play with up to ${TEAM_MAX} friends: a weekly ranking, shared journal entries, cheers.`),
-    hint("team"),
+    firstVisitTip("team"),
     h("section", { class: "panel" },
       h("h3", {}, "Create a team"),
       h("div", { class: "row" }, name, create),

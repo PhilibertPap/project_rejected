@@ -1,5 +1,5 @@
 // First login: a 3-step intro (the idea, the card, points). Each other tab explains itself with a
-// one-time tip the first time you open it (hint()). Settings > "Replay intro" shows everything again.
+// one-time tip the first time you open it (firstVisitTip()). Settings > "Replay intro" shows everything again.
 const TOUR = [
   { title: "Project Rejected",
     body: ["One small real-life ask a day: the time, a discount, a coffee with a stranger.",
@@ -19,7 +19,7 @@ const HINTS = {
   team: { title: "Team", text: "Up to 7 friends. You see each other's week and shared journal entries. Invite friends with a link." },
 };
 const hintKey = page => `hint:${state.me.id}:${page}`;
-function hint(page) {
+function firstVisitTip(page) {
   const tip = HINTS[page];
   try { if (!tip || localStorage.getItem(hintKey(page))) return null; } catch (_) { return null; }
   const box = h("div", { class: "hint-card", role: "note" },

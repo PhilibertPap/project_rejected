@@ -40,8 +40,8 @@ async function renderPlay() {
   const todays = state.attempts.filter(a => a.day === now && Game.isSit(a));
   const pending = todays.find(a => !a.result);
   const doneCount = todays.filter(Game.isDone).length;
-  const note = doneCount >= state.data.scoring.situation_daily.length - 1
-    ? "Points are maxed for today — cards still go in your deck."
+  const note = doneCount >= 3
+    ? `Side quests: ${doneCount} done today. From now on each one earns only a few points — they still go in your deck.`
     : `Side quests: ${doneCount} done today${doneCount === 1 ? " · one more validates the day" : ""}.`;
 
   let main;
@@ -67,7 +67,7 @@ async function renderPlay() {
 
   mount(el("view-play"),
     pageHead("Side quests", "Optional cards for wherever you are."),
-    hint("play"),
+    firstVisitTip("play"),
     main,
     h("p", { class: "muted small center" }, note),
     resultList(todays));

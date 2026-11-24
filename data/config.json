@@ -1,5 +1,5 @@
 {
-  "_doc": "Scoring and hidden-skill settings. Cards live in the database (table cards, seed in supabase/cards_seed.sql).",
+  "_doc": "Scoring and hidden-skill settings. Cards live in the database (table cards, seed in supabase/cards_seed.sql). situation_daily: share of points for the 1st, 2nd... side quest of the day; the last value repeats (never zero, so doing more is never useless).",
   "scoring": {
     "base": 100,
     "per_level": 15,
@@ -21,7 +21,8 @@
       1,
       0.5,
       0.25,
-      0
+      0.1,
+      0.05
     ],
     "situation_choke_mult": 0.5
   },
