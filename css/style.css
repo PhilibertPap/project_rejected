@@ -279,18 +279,37 @@ th { color: var(--muted); font-weight: 700; }
 
 .card-front {
   transform: rotateY(180deg); background: var(--paper); color: var(--paper-ink);
-  display: flex; flex-direction: column; justify-content: center; padding: 2.75rem 1.5rem;
+  display: flex; flex-direction: column; justify-content: flex-start; padding: calc(28% + 1rem) 1.35rem 2.6rem;
   box-shadow: var(--shadow), inset 0 0 0 1px var(--paper-line);
 }
-.card-front h2 { font-family: var(--display); font-weight: 400; font-size: 1.3rem; line-height: 1.15; margin: 0 0 0.6rem; letter-spacing: -0.01em; }
-.card-front p { font-size: 0.95rem; margin: 0 0 0.5rem; }
-.card-front .tip { color: var(--paper-muted); font-size: 0.86rem; font-style: italic; }
-.card-tags { font-size: 0.78rem !important; font-weight: 700; color: var(--psuit, var(--paper-muted)); margin-bottom: 0.5rem !important; }
-.corner { position: absolute; display: flex; flex-direction: column; align-items: center; line-height: 1; }
-.corner b { font-family: var(--display); font-weight: 400; font-size: 1.5rem; color: var(--psuit, var(--paper-ink)); }
-.corner span { font-size: 1rem; color: var(--psuit, var(--paper-ink)); margin-top: 0.1rem; }
-.corner.tl { top: 0.85rem; left: 0.85rem; }
-.corner.br { bottom: 0.85rem; right: 0.85rem; transform: rotate(180deg); }
+/* band: suit colour + the same lattice as the back, so front and back belong together */
+.card-band {
+  position: absolute; left: 0; right: 0; top: 0; height: 28%; overflow: hidden;
+  background-color: var(--psuit, var(--paper-muted));
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.12) 0 2px, transparent 2px 12px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.45rem;
+}
+.band-mark { position: absolute; right: -0.4rem; bottom: -1.6rem; font-size: 6.5rem; line-height: 1; color: rgba(255,255,255,0.13); pointer-events: none; }
+.card-kind { position: relative; font-size: 0.78rem; font-weight: 700; color: #fff; white-space: nowrap; }
+.card-pips { position: relative; display: flex; gap: 0.3rem; font-size: 0.8rem; line-height: 1; color: #fff; }
+.card-pips span { opacity: 0.35; }
+.card-pips span.on { opacity: 1; }
+.card-main { position: relative; display: flex; flex-direction: column; justify-content: center; flex: 1; }
+.card-front h2 { font-family: var(--display); font-weight: 400; font-size: 1.3rem; line-height: 1.12; margin: 0 0 0.55rem; letter-spacing: -0.01em; }
+.card-front p { font-size: 0.95rem; margin: 0 0 0.45rem; }
+.card-front .tip { color: var(--paper-muted); font-size: 0.82rem; font-style: italic; border-top: 1px dashed var(--paper-line); padding-top: 0.5rem; margin-top: 0.6rem; }
+.card-front.long h2 { font-size: 1.12rem; }
+.card-front.long p { font-size: 0.85rem; line-height: 1.4; }
+.card-front.long .tip { font-size: 0.76rem; }
+.card-tags { display: flex; gap: 0.3rem; margin: 0 0 0.5rem !important; }
+.card-tags span { font-size: 0.72rem; font-weight: 700; padding: 0.12rem 0.5rem; border-radius: 999px; background: color-mix(in srgb, var(--psuit) 14%, transparent); color: var(--psuit); }
+.card-result { font-weight: 700; color: var(--psuit); margin-top: 0.25rem !important; }
+.corner { position: absolute; display: flex; flex-direction: column; align-items: center; line-height: 1; z-index: 1; }
+.corner b { font-family: var(--display); font-weight: 400; font-size: 1.45rem; color: var(--psuit, var(--paper-ink)); }
+.corner span { font-size: 0.95rem; color: var(--psuit, var(--paper-ink)); margin-top: 0.1rem; }
+.corner.tl { top: 0.8rem; left: 0.85rem; }
+.corner.tl b, .corner.tl span { color: #fff; }
+.corner.br { bottom: 0.8rem; right: 0.85rem; transform: rotate(180deg); }
 .card-front.shine, .deck-card.shine { box-shadow: var(--shadow), inset 0 0 0 1px var(--paper-line), 0 0 0 3px var(--gold); }
 
 .card.collected { max-width: 170px; }
@@ -541,3 +560,22 @@ body.touring { overflow: hidden; }
 .tour-outcomes div { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.5rem; align-items: start; }
 .tour-outcomes .badge { text-align: center; }
 .tour-foot { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.75rem; }
+
+/* ---------- side quests: draw settings ---------- */
+.opt-label { font-size: 0.85rem; font-weight: 700; color: var(--muted); margin: 0.6rem 0 0; }
+.segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--surface); border-radius: var(--r); }
+.segmented button { display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem; padding: 0.55rem 0.75rem; background: transparent; color: var(--muted); border-radius: 9px; text-align: left; font-weight: 400; }
+.segmented button b { font-weight: 700; font-size: 0.95rem; }
+.segmented button small { font-family: var(--font); font-size: 0.78rem; margin: 0; opacity: 1; }
+.segmented button:hover { color: var(--fg); filter: none; }
+.segmented button.active { background: var(--accent); color: var(--on-accent); }
+.opts { display: flex; flex-direction: column; gap: 2px; background: var(--surface); border-radius: var(--r); padding: 0.25rem 0.85rem; margin-top: 0.6rem; }
+.switch.opt { display: flex; flex-direction: row-reverse; justify-content: space-between; padding: 0.6rem 0; }
+.switch.opt + .switch.opt { border-top: 1px solid var(--line); }
+.switch.opt span:last-child { display: flex; flex-direction: column; }
+.switch.opt b { font-weight: 700; }
+.switch.opt small { color: var(--muted); font-size: 0.8rem; }
+.yes-rate { text-align: center; font-size: 0.9rem; margin: 0.9rem auto 0.25rem; max-width: 320px; }
+.yes-rate b { color: var(--green); }
+.card.collected .card-front { padding: calc(28% + 0.6rem) 0.9rem 2rem; }
+.card.collected .band-mark { font-size: 4.5rem; bottom: -1rem; }

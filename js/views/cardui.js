@@ -24,17 +24,33 @@ const PLACE_LABEL = { class: "Class", library: "Library", cafe: "Café", street:
 
 const corner = (d, pos) => h("div", { class: `corner ${pos}` }, h("b", {}, String(d)), h("span", {}, SUITS[d].symbol));
 
+// Front of a card: index corners, what kind of card it is, tags, the ask, an optional tip,
+// a coloured band with a 5-pip difficulty meter
 function cardFront(card) {
   const d = card.difficulty;
-  const tags = [card.place ? PLACE_LABEL[card.place] : null, card.duo ? "Duo" : null, card.tone === "fun" ? "Fun" : null].filter(Boolean);
-  return h("div", { class: `card-face card-front suit-${d}` },
+  const kind = card.mode === "story" ? `Story · day ${card.day}` : card.mode === "sunday" ? "Sunday card"
+    : card.place ? PLACE_LABEL[card.place] : "Side quest";
+  const tags = [card.duo ? "Duo" : null, card.tone === "fun" ? "Fun" : null, card.crush && card.mode === "situation" ? "Flirt" : null].filter(Boolean);
+  const long = (card.body || "").length + (card.tip || "").length > 150;
+  return h("div", { class: `card-face card-front suit-${d}${long ? " long" : ""}` },
+    cardBand(d, kind),
     corner(d, "tl"),
-    tags.length ? h("p", { class: "card-tags" }, tags.join(" · ")) : null,
-    h("h2", {}, card.title),
-    h("p", {}, card.body),
-    card.tip ? h("p", { class: "tip" }, card.tip) : null,
+    h("div", { class: "card-main" },
+      tags.length ? h("p", { class: "card-tags" }, tags.map(t => h("span", {}, t))) : null,
+      h("h2", {}, card.title),
+      card.body ? h("p", {}, card.body) : null,
+      card.tip ? h("p", { class: "tip" }, card.tip) : null),
     corner(d, "br"));
 }
+
+// Coloured band at the top of the front: kind of card, difficulty pips, a big suit mark
+const cardBand = (d, kind) => h("div", { class: "card-band" },
+  h("span", { class: "band-mark", "aria-hidden": "true" }, SUITS[d].symbol),
+  kind ? h("span", { class: "card-kind" }, kind) : null,
+  pips(d));
+
+const pips = d => h("div", { class: "card-pips", title: `Level ${d} of 5` },
+  [1, 2, 3, 4, 5].map(i => h("span", { class: i <= d ? "on" : "" }, SUITS[d].symbol)));
 
 function cardEl(front, faceUp) {
   return h("div", { class: `card${faceUp ? " is-up" : ""}` },

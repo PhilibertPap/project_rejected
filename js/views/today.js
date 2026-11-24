@@ -24,9 +24,11 @@ function collectedCard(attempt) {
   const d = attempt.difficulty;
   return h("div", { class: "card is-up collected" }, h("div", { class: "card-inner" },
     h("div", { class: `card-face card-front suit-${d}${attempt.result === "rejected" ? " shine" : ""}` },
+      cardBand(d, null),
       corner(d, "tl"),
-      h("h2", { class: "center" }, attempt.title),
-      h("p", { class: "tip center" }, RESULT_LABEL[attempt.result]),
+      h("div", { class: "card-main center" },
+        h("h2", {}, attempt.title),
+        h("p", { class: "card-result" }, RESULT_LABEL[attempt.result])),
       corner(d, "br"))));
 }
 

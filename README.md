@@ -41,3 +41,6 @@ Daily rejection therapy challenges. https://philibertpap.github.io/project_rejec
 - `tools/cards.py` — card catalogue → seed SQL
 - `css/style.css` — themes (night / day / black) as CSS variables at the top; one accent colour per tab
 - `fonts/` — Archivo Black + Instrument Sans (OFL, self-hosted)
+
+## Deploy
+- Bump the `?v=` value on the css/js links in `index.html` when files change, so browsers drop their cached copy.
